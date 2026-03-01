@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Workflow Step Dialog
+
+    Custom Granite UI dialog for workflow participant steps that allows
+    reviewers to add comments, annotations, and make approval decisions.
+
+    ┌─────────────────────────────────────────────────────────────────────────┐
+    │                    WORKFLOW REVIEW DIALOG                               │
+    ├─────────────────────────────────────────────────────────────────────────┤
+    │  ┌────────────────────────────────────────────────────────────────────┐│
+    │  │ TABS: [Review] [Comments] [History] [Annotations]                  ││
+    │  └────────────────────────────────────────────────────────────────────┘│
+    │                                                                         │
+    │  ┌─────────────────────────┐  ┌────────────────────────────────────┐  │
+    │  │                         │  │  Decision                          │  │
+    │  │    Content Preview      │  │  ○ Approve                         │  │
+    │  │    (iframe/thumbnail)   │  │  ○ Request Changes                 │  │
+    │  │                         │  │  ○ Reject                          │  │
+    │  │                         │  │  ○ Escalate                        │  │
+    │  │                         │  ├────────────────────────────────────┤  │
+    │  │                         │  │  Priority: [▼ Normal]              │  │
+    │  │                         │  │  Due Date: [📅 Pick date]          │  │
+    │  └─────────────────────────┘  └────────────────────────────────────┘  │
+    │                                                                         │
+    │  ┌────────────────────────────────────────────────────────────────────┐│
+    │  │  Review Comments                                                   ││
+    │  │  ┌──────────────────────────────────────────────────────────────┐ ││
+    │  │  │  Enter your review feedback...                               │ ││
+    │  │  │                                                              │ ││
+    │  │  └──────────────────────────────────────────────────────────────┘ ││
+    │  │  □ Notify author immediately                                      ││
+    │  │  □ Mark as confidential (visible to approvers only)               ││
+    │  └────────────────────────────────────────────────────────────────────┘│
+    │                                                                         │
+    │  ┌────────────────────────────────────────────────────────────────────┐│
+    │  │  Rejection Reason (required if rejecting)                         ││
+    │  │  [▼ Select a reason...                                          ] ││
+    │  │  ┌──────────────────────────────────────────────────────────────┐ ││
+    │  │  │  Additional details for rejection...                         │ ││
+    │  │  └──────────────────────────────────────────────────────────────┘ ││
+    │  └────────────────────────────────────────────────────────────────────┘│
+    │                                                                         │
+    │           [Cancel]    [Save Draft]    [Submit Decision]               │
+    └─────────────────────────────────────────────────────────────────────────┘
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Content Review"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[demo-workflow.review]"
+    mode="edit"
+    trackingFeature="workflow-review-dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <!-- Main Tabs Container -->
+            <tabs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+
+                    <!-- TAB 1: Review Decision -->
+                    <review
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Review"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <!-- Two Column Layout -->
+                            <columns
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                                margin="{Boolean}true">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <!-- Left Column: Content Preview -->
+                                    <leftColumn
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <previewSection
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/well">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <previewLabel
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/heading"
+                                                        level="{Long}4"
+                                                        text="Content Preview"/>
+                                                    <contentPreview
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="demo-workflow/components/workflow-review/content-preview"
+                                                        name="./contentPreview"/>
+                                                    <viewFullContent
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/button"
+                                                        text="View Full Content"
+                                                        icon="fullScreen"
+                                                        variant="secondary"
+                                                        granite:class="workflow-view-content-btn"/>
+                                                </items>
+                                            </previewSection>
+                                        </items>
+                                    </leftColumn>
+
+                                    <!-- Right Column: Decision Controls -->
+                                    <rightColumn
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/container">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <!-- Decision Section -->
+                                            <decisionSection
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/well">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <decisionLabel
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/heading"
+                                                        level="{Long}4"
+                                                        text="Your Decision"/>
+                                                    <decision
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/form/radiogroup"
+                                                        fieldLabel="Action"
+                                                        name="./decision"
+                                                        required="{Boolean}true"
+                                                        vertical="{Boolean}true">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <approve
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="Approve - Content meets all requirements"
+                                                                value="approve"
+                                                                checked="{Boolean}false"/>
+                                                            <requestChanges
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="Request Changes - Minor revisions needed"
+                                                                value="request_changes"
+                                                                checked="{Boolean}false"/>
+                                                            <reject
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="Reject - Does not meet requirements"
+                                                                value="reject"
+                                                                checked="{Boolean}false"/>
+                                                            <escalate
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="Escalate - Requires higher-level review"
+                                                                value="escalate"
+                                                                checked="{Boolean}false"/>
+                                                        </items>
+                                                    </decision>
+                                                </items>
+                                            </decisionSection>
+
+                                            <!-- Priority and Due Date -->
+                                            <metadataSection
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/well">
+                                                <items jcr:primaryType="nt:unstructured">
+                                                    <priority
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                        fieldLabel="Priority"
+                                                        name="./priority">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <low
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="Low"
+                                                                value="low"/>
+                                                            <normal
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="Normal"
+                                                                value="normal"
+                                                                selected="{Boolean}true"/>
+                                                            <high
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="High"
+                                                                value="high"/>
+                                                            <urgent
+                                                                jcr:primaryType="nt:unstructured"
+                                                                text="Urgent"
+                                                                value="urgent"/>
+                                                        </items>
+                                                    </priority>
+                                                    <dueDate
+                                                        jcr:primaryType="nt:unstructured"
+                                                        sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
+                                                        fieldLabel="Follow-up Date"
+                                                        name="./dueDate"
+                                                        type="date"
+                                                        displayedFormat="YYYY-MM-DD"/>
+                                                </items>
+                                            </metadataSection>
+                                        </items>
+                                    </rightColumn>
+                                </items>
+                            </columns>
+
+                            <!-- Review Comments Section -->
+                            <commentsSection
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/well"
+                                margin="{Boolean}true">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <commentsLabel
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/heading"
+                                        level="{Long}4"
+                                        text="Review Comments"/>
+                                    <reviewComment
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textarea"
+                                        fieldLabel="Your Feedback"
+                                        fieldDescription="Provide detailed feedback for the content author"
+                                        name="./reviewComment"
+                                        rows="{Long}5"
+                                        maxlength="{Long}2000"/>
+                                    <commentOptions
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                                        margin="{Boolean}true">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <notifyAuthor
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                                text="Notify author immediately via email"
+                                                name="./notifyAuthor"
+                                                value="true"/>
+                                            <confidential
+                                                jcr:primaryType="nt:unstructured"
+                                                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                                text="Mark as confidential (visible to approvers only)"
+                                                name="./confidential"
+                                                value="true"/>
+                                        </items>
+                                    </commentOptions>
+                                </items>
+                            </commentsSection>
+
+                            <!-- Rejection Reason Section (shown when reject is selected) -->
+                            <rejectionSection
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/well"
+                                margin="{Boolean}true"
+                                granite:class="workflow-rejection-section"
+                                granite:hidden="{Boolean}true">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <rejectionLabel
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/heading"
+                                        level="{Long}4"
+                                        text="Rejection Details"/>
+                                    <rejectionReason
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                        fieldLabel="Rejection Reason"
+                                        fieldDescription="Select the primary reason for rejection"
+                                        name="./rejectionReason"
+                                        required="{Boolean}true"
+                                        emptyText="Select a reason...">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <quality
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Quality Issues - Content quality below standards"
+                                                value="quality"/>
+                                            <accuracy
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Accuracy - Contains factual errors or outdated info"
+                                                value="accuracy"/>
+                                            <branding
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Branding - Does not follow brand guidelines"
+                                                value="branding"/>
+                                            <legal
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Legal/Compliance - Potential legal or compliance issues"
+                                                value="legal"/>
+                                            <incomplete
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Incomplete - Missing required sections or information"
+                                                value="incomplete"/>
+                                            <duplicate
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Duplicate - Similar content already exists"
+                                                value="duplicate"/>
+                                            <irrelevant
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Irrelevant - Content not aligned with objectives"
+                                                value="irrelevant"/>
+                                            <other
+                                                jcr:primaryType="nt:unstructured"
+                                                text="Other - See comments for details"
+                                                value="other"/>
+                                        </items>
+                                    </rejectionReason>
+                                    <rejectionDetails
+                                        jcr:primaryType="nt:unstructured"
+                                        sling:resourceType="granite/ui/components/coral/foundation/form/textarea"
+                                        fieldLabel="Additional Details"
+                                        fieldDescription="Provide specific details about what needs to be corrected"
+                                        name="./rejectionDetails"
+                                        rows="{Long}3"
+                                        required="{Boolean}true"/>
+                                </items>
+                            </rejectionSection>
+                        </items>
+                    </review>
+
+                    <!-- TAB 2: Comments Thread -->
+                    <comments
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Comments"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <commentThread
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="demo-workflow/components/workflow-review/comment-thread"
+                                name="./commentThread"/>
+                        </items>
+                    </comments>
+
+                    <!-- TAB 3: Review History -->
+                    <history
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="History"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <reviewHistory
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="demo-workflow/components/workflow-review/review-history"
+                                name="./reviewHistory"/>
+                        </items>
+                    </history>
+
+                    <!-- TAB 4: Annotations -->
+                    <annotations
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Annotations"
+                        sling:resourceType="granite/ui/components/coral/foundation/container"
+                        margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <annotationEditor
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="demo-workflow/components/workflow-review/annotation-editor"
+                                name="./annotations"/>
+                        </items>
+                    </annotations>
+
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>

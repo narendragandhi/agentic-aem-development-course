@@ -1,0 +1,194 @@
+<!--/*
+    Review History Component
+
+    Displays the complete workflow review history as a timeline,
+    showing all stages, decisions, and participants.
+
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                    REVIEW HISTORY                               │
+    ├─────────────────────────────────────────────────────────────────┤
+    │                                                                 │
+    │  Workflow: Content Approval Workflow                            │
+    │  Started: Jan 14, 2024 by admin                                │
+    │  Current Status: Awaiting Manager Approval                      │
+    │                                                                 │
+    │  ┌─────────────────────────────────────────────────────────┐   │
+    │  │                                                         │   │
+    │  │  ✓ COMPLETED ─────────────────────────────────────────  │   │
+    │  │  │                                                      │   │
+    │  │  ●  Content Validation                                  │   │
+    │  │  │  Jan 14, 2024 10:00 AM                               │   │
+    │  │  │  Status: Passed                                      │   │
+    │  │  │  Duration: 2 seconds                                 │   │
+    │  │  │                                                      │   │
+    │  │  ●  Team Lead Review                                    │   │
+    │  │  │  Jan 14, 2024 10:05 AM - Jan 14, 2024 2:30 PM        │   │
+    │  │  │  Reviewer: John Smith                                │   │
+    │  │  │  Decision: Approved ✓                                │   │
+    │  │  │  Comment: "Good content, minor formatting fixed"     │   │
+    │  │  │  Duration: 4 hours 25 minutes                        │   │
+    │  │  │                                                      │   │
+    │  │  ◉  Manager Review (CURRENT)                            │   │
+    │  │  │  Started: Jan 14, 2024 2:31 PM                       │   │
+    │  │  │  Assigned to: Marketing Managers                     │   │
+    │  │  │  Waiting: 18 hours                                   │   │
+    │  │  │                                                      │   │
+    │  │  ○  Director Sign-Off (PENDING)                         │   │
+    │  │  │                                                      │   │
+    │  │  ○  Publish Content (PENDING)                           │   │
+    │  │                                                         │   │
+    │  └─────────────────────────────────────────────────────────┘   │
+    │                                                                 │
+    └─────────────────────────────────────────────────────────────────┘
+*/-->
+<sly data-sly-use.history="${'com.demo.workflow.models.ReviewHistoryModel'}"/>
+
+<div class="workflow-review-history" data-workflow-id="${history.workflowId}">
+
+    <!-- Workflow Summary Header -->
+    <div class="history-header">
+        <div class="workflow-info">
+            <h3 class="workflow-title">${history.workflowTitle}</h3>
+            <div class="workflow-meta">
+                <span class="meta-item">
+                    <coral-icon icon="clock" size="XS"></coral-icon>
+                    Started: ${history.startDate} by ${history.initiator}
+                </span>
+                <span class="meta-item">
+                    <coral-icon icon="time" size="XS"></coral-icon>
+                    Duration: ${history.totalDuration}
+                </span>
+            </div>
+        </div>
+        <div class="workflow-status">
+            <coral-tag color="${history.statusColor}" size="L">${history.currentStatus}</coral-tag>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="workflow-progress">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: ${history.progressPercent}%"></div>
+        </div>
+        <span class="progress-label">${history.completedSteps} of ${history.totalSteps} steps completed</span>
+    </div>
+
+    <!-- Timeline -->
+    <div class="history-timeline">
+        <sly data-sly-list.step="${history.steps}">
+            <div class="timeline-item ${step.status}"
+                 data-step-id="${step.id}">
+
+                <!-- Timeline Connector -->
+                <div class="timeline-connector">
+                    <div class="connector-line ${step.status}"></div>
+                    <div class="connector-dot ${step.status}">
+                        <sly data-sly-test="${step.status == 'completed'}">
+                            <coral-icon icon="checkCircle" size="S"></coral-icon>
+                        </sly>
+                        <sly data-sly-test="${step.status == 'current'}">
+                            <coral-icon icon="clock" size="S"></coral-icon>
+                        </sly>
+                        <sly data-sly-test="${step.status == 'pending'}">
+                            <coral-icon icon="circle" size="S"></coral-icon>
+                        </sly>
+                        <sly data-sly-test="${step.status == 'rejected'}">
+                            <coral-icon icon="closeCircle" size="S"></coral-icon>
+                        </sly>
+                    </div>
+                </div>
+
+                <!-- Step Content -->
+                <div class="timeline-content">
+                    <div class="step-header">
+                        <h4 class="step-title">
+                            ${step.title}
+                            <sly data-sly-test="${step.status == 'current'}">
+                                <coral-tag color="blue" size="S">CURRENT</coral-tag>
+                            </sly>
+                        </h4>
+                        <span class="step-type">${step.type}</span>
+                    </div>
+
+                    <!-- Completed Step Details -->
+                    <sly data-sly-test="${step.status == 'completed' || step.status == 'rejected'}">
+                        <div class="step-details">
+                            <div class="detail-row">
+                                <coral-icon icon="calendar" size="XS"></coral-icon>
+                                <span>${step.startDate} - ${step.endDate}</span>
+                            </div>
+                            <sly data-sly-test="${step.participant}">
+                                <div class="detail-row">
+                                    <coral-icon icon="user" size="XS"></coral-icon>
+                                    <span>Reviewer: ${step.participant}</span>
+                                </div>
+                            </sly>
+                            <div class="detail-row">
+                                <coral-icon icon="${step.decisionIcon}" size="XS"></coral-icon>
+                                <span>Decision:
+                                    <strong class="${step.decisionClass}">${step.decision}</strong>
+                                </span>
+                            </div>
+                            <sly data-sly-test="${step.comment}">
+                                <div class="step-comment">
+                                    <coral-icon icon="comment" size="XS"></coral-icon>
+                                    <blockquote>"${step.comment}"</blockquote>
+                                </div>
+                            </sly>
+                            <div class="detail-row duration">
+                                <coral-icon icon="time" size="XS"></coral-icon>
+                                <span>Duration: ${step.duration}</span>
+                            </div>
+                        </div>
+                    </sly>
+
+                    <!-- Current Step Details -->
+                    <sly data-sly-test="${step.status == 'current'}">
+                        <div class="step-details current">
+                            <div class="detail-row">
+                                <coral-icon icon="calendar" size="XS"></coral-icon>
+                                <span>Started: ${step.startDate}</span>
+                            </div>
+                            <div class="detail-row">
+                                <coral-icon icon="userGroup" size="XS"></coral-icon>
+                                <span>Assigned to: ${step.assignee}</span>
+                            </div>
+                            <div class="detail-row waiting">
+                                <coral-icon icon="clock" size="XS"></coral-icon>
+                                <span>Waiting: ${step.waitingTime}</span>
+                                <sly data-sly-test="${step.isOverdue}">
+                                    <coral-tag color="red" size="S">OVERDUE</coral-tag>
+                                </sly>
+                            </div>
+                            <sly data-sly-test="${step.dueDate}">
+                                <div class="detail-row">
+                                    <coral-icon icon="alert" size="XS"></coral-icon>
+                                    <span>Due: ${step.dueDate}</span>
+                                </div>
+                            </sly>
+                        </div>
+                    </sly>
+
+                    <!-- Pending Step (minimal info) -->
+                    <sly data-sly-test="${step.status == 'pending'}">
+                        <div class="step-details pending">
+                            <span class="pending-label">Waiting for previous steps</span>
+                        </div>
+                    </sly>
+                </div>
+            </div>
+        </sly>
+    </div>
+
+    <!-- Export/Print Options -->
+    <div class="history-actions">
+        <button class="coral-Button coral-Button--secondary" data-action="export-pdf">
+            <coral-icon icon="fileAdd" size="S"></coral-icon>
+            Export as PDF
+        </button>
+        <button class="coral-Button coral-Button--secondary" data-action="print">
+            <coral-icon icon="print" size="S"></coral-icon>
+            Print History
+        </button>
+    </div>
+</div>

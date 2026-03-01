@@ -1,0 +1,107 @@
+# BEAD Task Template
+# Use this template to create new tasks
+
+# ============================================
+# TASK IDENTIFICATION
+# ============================================
+id: "${PREFIX}-${SEQUENCE}"  # e.g., SAW-021
+type: task                    # epic, feature, task, subtask, bug, spike
+title: "${TASK_TITLE}"
+status: pending              # pending, in_progress, blocked, review, completed
+priority: medium             # critical, high, medium, low
+
+# ============================================
+# HIERARCHY
+# ============================================
+parent: "${PARENT_ID}"       # Parent feature/epic ID
+assignee: "${AGENT_ID}"      # aem-coder, aem-tester, aem-reviewer
+
+# ============================================
+# TIMESTAMPS
+# ============================================
+created: "${ISO_TIMESTAMP}"
+updated: "${ISO_TIMESTAMP}"
+
+# ============================================
+# DEPENDENCIES
+# ============================================
+dependencies:
+  - id: "${DEP_TASK_ID}"
+    type: requires           # requires, blocks, related
+    status: pending
+
+# ============================================
+# DESCRIPTION
+# ============================================
+description: |
+  Brief description of what needs to be done.
+
+  Include:
+  - Context and background
+  - Specific requirements
+  - Expected outcomes
+
+# ============================================
+# ACCEPTANCE CRITERIA
+# ============================================
+acceptance_criteria:
+  - criteria: "First criterion description"
+    status: pending          # pending, met, not_met
+    evidence: ""             # Fill when met
+  - criteria: "Second criterion description"
+    status: pending
+    evidence: ""
+  - criteria: "Third criterion description"
+    status: pending
+    evidence: ""
+
+# ============================================
+# CONTEXT REFERENCES
+# ============================================
+context:
+  prd_ref: "${PRD_SECTION}"           # e.g., "US-1.1"
+  arch_ref: "${ARCHITECTURE_SECTION}" # e.g., "CS-02"
+  files:
+    - "path/to/relevant/file.java"
+    - "path/to/spec/document.md"
+
+# ============================================
+# ESTIMATION
+# ============================================
+estimated_hours: 2
+complexity: medium           # low, medium, high, very_high
+
+# ============================================
+# PROGRESS TRACKING
+# ============================================
+progress:
+  started_at: null
+  completed_at: null
+  actual_hours: null
+
+# ============================================
+# SESSION LOG
+# ============================================
+session_log: []
+# Example entries:
+#   - timestamp: "2024-02-28T10:00:00Z"
+#     agent: aem-coder
+#     action: started
+#     note: "Beginning implementation"
+
+# ============================================
+# ARTIFACTS
+# ============================================
+artifacts: []
+# Example entries:
+#   - path: "core/src/main/java/.../MyClass.java"
+#     type: java-class
+#     lines: 145
+
+# ============================================
+# REVIEW
+# ============================================
+review:
+  status: pending            # pending, in_review, approved, changes_requested
+  assigned_to: null
+  findings: []

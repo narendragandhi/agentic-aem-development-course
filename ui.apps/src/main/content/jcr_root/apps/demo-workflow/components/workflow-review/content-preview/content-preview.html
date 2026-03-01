@@ -1,0 +1,128 @@
+<!--/*
+    Content Preview Component
+
+    Displays an interactive preview of the content being reviewed.
+    Supports both page content (via iframe) and DAM assets (via thumbnail).
+
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                    CONTENT PREVIEW                              │
+    ├─────────────────────────────────────────────────────────────────┤
+    │  ┌───────────────────────────────────────────────────────────┐ │
+    │  │                                                           │ │
+    │  │                    [Content Thumbnail]                    │ │
+    │  │                         or                                │ │
+    │  │                    [Page Preview]                         │ │
+    │  │                                                           │ │
+    │  │   ┌─────┐                                    ┌─────┐     │ │
+    │  │   │ 📌 │  <- Annotation Markers              │ 📌 │     │ │
+    │  │   └─────┘                                    └─────┘     │ │
+    │  │                                                           │ │
+    │  └───────────────────────────────────────────────────────────┘ │
+    │                                                                 │
+    │  Title: [Content Title]                                        │
+    │  Path: /content/site/page                                      │
+    │  Last Modified: 2024-01-15 by admin                            │
+    │  Status: Draft | In Review | Approved                          │
+    │                                                                 │
+    └─────────────────────────────────────────────────────────────────┘
+*/-->
+<sly data-sly-use.preview="${'com.demo.workflow.models.ContentPreviewModel'}"/>
+
+<div class="workflow-content-preview"
+     data-content-path="${preview.contentPath}"
+     data-content-type="${preview.contentType}">
+
+    <!-- Preview Container with Annotation Overlay -->
+    <div class="preview-container">
+        <sly data-sly-test="${preview.isAsset}">
+            <!-- DAM Asset Preview -->
+            <div class="asset-preview">
+                <img src="${preview.thumbnailUrl}"
+                     alt="${preview.title}"
+                     class="preview-image"
+                     data-full-url="${preview.fullImageUrl}"/>
+                <div class="annotation-overlay" data-annotations="${preview.annotationsJson}"></div>
+            </div>
+        </sly>
+
+        <sly data-sly-test="${!preview.isAsset}">
+            <!-- Page Content Preview -->
+            <div class="page-preview">
+                <iframe src="${preview.previewUrl}"
+                        class="preview-iframe"
+                        sandbox="allow-same-origin allow-scripts"
+                        title="Content Preview"></iframe>
+                <div class="annotation-overlay" data-annotations="${preview.annotationsJson}"></div>
+            </div>
+        </sly>
+
+        <!-- Zoom Controls -->
+        <div class="preview-controls">
+            <button class="coral-Button coral-Button--secondary" data-action="zoom-in" title="Zoom In">
+                <coral-icon icon="zoomIn" size="S"></coral-icon>
+            </button>
+            <button class="coral-Button coral-Button--secondary" data-action="zoom-out" title="Zoom Out">
+                <coral-icon icon="zoomOut" size="S"></coral-icon>
+            </button>
+            <button class="coral-Button coral-Button--secondary" data-action="zoom-fit" title="Fit to View">
+                <coral-icon icon="fitPage" size="S"></coral-icon>
+            </button>
+            <span class="zoom-level">100%</span>
+        </div>
+    </div>
+
+    <!-- Content Metadata -->
+    <div class="preview-metadata">
+        <table class="coral-Table">
+            <tbody>
+                <tr>
+                    <td class="metadata-label">Title:</td>
+                    <td class="metadata-value">${preview.title}</td>
+                </tr>
+                <tr>
+                    <td class="metadata-label">Path:</td>
+                    <td class="metadata-value">
+                        <code>${preview.contentPath}</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="metadata-label">Last Modified:</td>
+                    <td class="metadata-value">
+                        ${preview.lastModified} by ${preview.lastModifiedBy}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="metadata-label">Status:</td>
+                    <td class="metadata-value">
+                        <coral-tag color="${preview.statusColor}">${preview.status}</coral-tag>
+                    </td>
+                </tr>
+                <sly data-sly-test="${preview.isAsset}">
+                    <tr>
+                        <td class="metadata-label">File Type:</td>
+                        <td class="metadata-value">${preview.mimeType}</td>
+                    </tr>
+                    <tr>
+                        <td class="metadata-label">Dimensions:</td>
+                        <td class="metadata-value">${preview.dimensions}</td>
+                    </tr>
+                </sly>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Version Comparison (if applicable) -->
+    <sly data-sly-test="${preview.hasVersions}">
+        <div class="version-comparison">
+            <coral-select name="compareVersion" placeholder="Compare with version...">
+                <sly data-sly-list.version="${preview.versions}">
+                    <coral-select-item value="${version.id}">${version.label} - ${version.date}</coral-select-item>
+                </sly>
+            </coral-select>
+            <button class="coral-Button coral-Button--secondary" data-action="compare">
+                <coral-icon icon="compare" size="S"></coral-icon>
+                Compare
+            </button>
+        </div>
+    </sly>
+</div>

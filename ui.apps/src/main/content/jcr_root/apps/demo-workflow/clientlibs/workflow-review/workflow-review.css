@@ -1,0 +1,629 @@
+/**
+ * Workflow Review Dialog Styles
+ */
+
+/* Content Preview */
+.workflow-content-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.preview-container {
+    position: relative;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    min-height: 300px;
+}
+
+.preview-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.preview-iframe {
+    width: 100%;
+    height: 400px;
+    border: none;
+}
+
+.preview-controls {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.9);
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.preview-metadata {
+    background: #fafafa;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.metadata-label {
+    font-weight: 600;
+    color: #6e6e6e;
+    width: 120px;
+}
+
+/* Comment Thread */
+.workflow-comment-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.thread-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.thread-filters {
+    display: flex;
+    gap: 8px;
+}
+
+.new-comment-form {
+    background: #f5f5f5;
+    padding: 16px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}
+
+.comment-editor {
+    margin-bottom: 12px;
+}
+
+.rich-text-toolbar {
+    display: flex;
+    gap: 4px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.comment-textarea {
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 0 0 4px 4px;
+    background: #fff;
+}
+
+.comment-textarea:focus {
+    outline: none;
+    border-color: #1473e6;
+}
+
+.comment-textarea[placeholder]:empty:before {
+    content: attr(placeholder);
+    color: #999;
+}
+
+.comment-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.comment-item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.comment-item.resolved {
+    background: #f0fff4;
+    border-color: #c6f6d5;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.comment-author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.author-name {
+    font-weight: 600;
+}
+
+.author-role {
+    color: #6e6e6e;
+    font-size: 12px;
+}
+
+.comment-date {
+    color: #6e6e6e;
+    font-size: 12px;
+}
+
+.comment-body {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+.resolved-icon {
+    color: #38a169;
+    margin-right: 4px;
+}
+
+.resolved-label {
+    color: #38a169;
+    font-weight: 600;
+}
+
+.comment-replies {
+    margin-left: 40px;
+    margin-top: 12px;
+    padding-left: 12px;
+    border-left: 2px solid #e0e0e0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6e6e6e;
+}
+
+/* Review History */
+.workflow-review-history {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.workflow-title {
+    margin: 0 0 8px 0;
+}
+
+.workflow-meta {
+    display: flex;
+    gap: 16px;
+    color: #6e6e6e;
+    font-size: 13px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.workflow-progress {
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #1473e6;
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+.progress-label {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #6e6e6e;
+}
+
+.history-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 24px;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-connector {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+}
+
+.connector-line {
+    position: absolute;
+    left: 11px;
+    top: 24px;
+    bottom: 0;
+    width: 2px;
+    background: #e0e0e0;
+}
+
+.timeline-item:last-child .connector-line {
+    display: none;
+}
+
+.connector-dot {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+}
+
+.connector-dot.completed {
+    background: #38a169;
+    border-color: #38a169;
+    color: #fff;
+}
+
+.connector-dot.current {
+    background: #1473e6;
+    border-color: #1473e6;
+    color: #fff;
+}
+
+.connector-dot.rejected {
+    background: #e53e3e;
+    border-color: #e53e3e;
+    color: #fff;
+}
+
+.timeline-content {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.step-title {
+    margin: 0;
+    font-size: 14px;
+}
+
+.step-type {
+    font-size: 12px;
+    color: #6e6e6e;
+}
+
+.step-details {
+    font-size: 13px;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0;
+    color: #4a4a4a;
+}
+
+.step-comment {
+    margin-top: 8px;
+    padding: 8px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.step-comment blockquote {
+    margin: 0;
+    font-style: italic;
+    color: #4a4a4a;
+}
+
+.decision-approved { color: #38a169; }
+.decision-rejected { color: #e53e3e; }
+
+/* Annotation Editor */
+.workflow-annotation-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.annotation-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.tool-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tool-label {
+    font-size: 12px;
+    color: #6e6e6e;
+    margin-right: 4px;
+}
+
+.tool-button {
+    padding: 6px 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+}
+
+.tool-button:hover {
+    background: #f0f0f0;
+}
+
+.tool-button.active {
+    background: #1473e6;
+    color: #fff;
+    border-color: #1473e6;
+}
+
+.tool-button.danger:hover {
+    background: #fee2e2;
+    border-color: #e53e3e;
+    color: #e53e3e;
+}
+
+.tool-separator {
+    width: 1px;
+    height: 24px;
+    background: #e0e0e0;
+    margin: 0 4px;
+}
+
+.color-button {
+    width: 24px;
+    height: 24px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.color-button.active {
+    border-color: #333;
+}
+
+.annotation-canvas-container {
+    position: relative;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.content-layer {
+    position: relative;
+}
+
+.annotation-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: all;
+}
+
+.annotation {
+    cursor: pointer;
+}
+
+.annotation:hover {
+    opacity: 0.8;
+}
+
+.annotation.highlight-flash {
+    animation: flash 0.5s ease-in-out 2;
+}
+
+@keyframes flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.annotation-popover {
+    position: absolute;
+    width: 280px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 100;
+}
+
+.popover-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f5f5f5;
+}
+
+.annotation-number {
+    font-weight: 600;
+}
+
+.popover-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.popover-content {
+    padding: 12px;
+}
+
+.annotation-comment {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.popover-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-top: 1px solid #e0e0e0;
+    background: #f5f5f5;
+}
+
+.annotation-author {
+    font-size: 11px;
+    color: #6e6e6e;
+}
+
+.popover-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.annotations-list-panel {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.panel-header h4 {
+    margin: 0;
+    font-size: 14px;
+}
+
+.panel-content {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.annotations-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.annotation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.annotation-item:last-child {
+    border-bottom: none;
+}
+
+.annotation-item.resolved {
+    opacity: 0.6;
+}
+
+.annotation-icon {
+    flex-shrink: 0;
+}
+
+.annotation-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.annotation-text {
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.annotation-index {
+    font-weight: 600;
+}
+
+.annotation-meta {
+    font-size: 11px;
+    color: #6e6e6e;
+}
+
+.annotation-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.annotation-item:hover .annotation-actions {
+    opacity: 1;
+}

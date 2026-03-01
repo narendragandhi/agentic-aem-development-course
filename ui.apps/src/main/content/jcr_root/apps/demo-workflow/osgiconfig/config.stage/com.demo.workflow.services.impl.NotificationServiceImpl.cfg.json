@@ -1,0 +1,11 @@
+{
+    "enabled": true,
+    "from_email": "aem-workflow-stage@example.com",
+    "security_recipients": "security-stage@example.com",
+    "slack_webhook_url": "$[env:SLACK_WEBHOOK_URL_STAGE]",
+    "slack_security_channel": "#security-alerts-stage",
+    "email_enabled": true,
+    "slack_enabled": true,
+    "thread_pool_size": 2,
+    "max_retries": 3
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:WorkflowLauncher"
+    conditions="[cq:workflowStatus=pending-approval]"
+    description="Triggers content approval workflow for pages pending approval"
+    enabled="{Boolean}true"
+    eventType="MODIFIED"
+    excludeList=""
+    nodetype="cq:PageContent"
+    glob="/content/demo-site/.*"
+    runModes="author"
+    workflow="/conf/global/settings/workflow/models/content-approval"/>

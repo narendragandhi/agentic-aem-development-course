@@ -1,0 +1,5 @@
+{
+    "quarantinePath": "/content/dam/quarantine",
+    "retentionDays": 30,
+    "notifyEmail": "security@example.com"
+}

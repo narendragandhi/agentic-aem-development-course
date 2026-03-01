@@ -1,0 +1,5 @@
+{
+    "defaultApprover": "content-reviewers",
+    "highValueGroup": "senior-reviewers",
+    "highValueThreshold": 10485760
+}

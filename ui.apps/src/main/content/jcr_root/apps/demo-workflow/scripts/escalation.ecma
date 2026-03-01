@@ -1,0 +1,16 @@
+// Escalate task to the senior-managers group
+var workItem = granite.workflow.current.workItem;
+var metaData = workItem.getWorkflow().getMetaData();
+
+if (metaData.containsKey("escalationCount")) {
+    var count = metaData.get("escalationCount", java.lang.Integer);
+    metaData.put("escalationCount", count + 1);
+} else {
+    metaData.put("escalationCount", 1);
+}
+
+// Reassign the current work item to the escalation group
+var newAssignee = "senior-managers";
+granite.workflow.current.workItem.reassign(newAssignee);
+
+gs.log.info("Work item " + workItem.getId() + " escalated to " + newAssignee);

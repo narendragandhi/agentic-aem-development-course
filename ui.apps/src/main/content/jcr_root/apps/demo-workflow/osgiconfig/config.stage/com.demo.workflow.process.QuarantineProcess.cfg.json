@@ -1,0 +1,5 @@
+{
+    "quarantinePath": "/content/dam/quarantine-stage",
+    "notifyOnQuarantine": true,
+    "retentionDays": 14
+}

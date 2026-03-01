@@ -1,0 +1,9 @@
+{
+    "enabled": true,
+    "scanMode": "CLAMAV",
+    "clamavHost": "clamav-prod.internal",
+    "clamavPort": 3310,
+    "connectionTimeout": 3000,
+    "readTimeout": 60000,
+    "maxFileSize": 268435456
+}

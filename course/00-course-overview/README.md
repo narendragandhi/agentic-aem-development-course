@@ -1,0 +1,265 @@
+# Agentic Development for AEM: Building Enterprise Workflows
+
+## Course Overview
+
+This hands-on course demonstrates how AI agents can transform the entire software development lifecycle for Adobe Experience Manager (AEM) projects. Using a real-world **Secure Asset Approval Workflow** as our case study, you'll learn to leverage BMAD, BEAD, and GasTown frameworks to build enterprise-grade solutions with AI assistance.
+
+---
+
+## Course Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    AGENTIC DEVELOPMENT LIFECYCLE                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐│
+│   │     PRD     │───▶│    BMAD     │───▶│   BEAD      │───▶│  GasTown    ││
+│   │  Business   │    │  Phases     │    │  AI Tasks   │    │  Orchestrate││
+│   │  Requirements│   │  Planning   │    │  Tracking   │    │  Agents     ││
+│   └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘│
+│         │                  │                  │                  │         │
+│         ▼                  ▼                  ▼                  ▼         │
+│   ┌─────────────────────────────────────────────────────────────────────┐ │
+│   │                      HANDS-ON LABS                                   │ │
+│   │                                                                      │ │
+│   │  Lab 1: PRD → BMAD Translation                                      │ │
+│   │  Lab 2: Architecture Design with AI                                 │ │
+│   │  Lab 3: Component Development Sprint                                │ │
+│   │  Lab 4: Multi-Agent Testing Pipeline                                │ │
+│   │  Lab 5: Deployment & Operations                                     │ │
+│   └─────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Learning Objectives
+
+By the end of this course, participants will be able to:
+
+### 1. Understand Agentic Development
+- [ ] Explain how AI agents differ from traditional automation
+- [ ] Describe the roles of BMAD, BEAD, and GasTown in the SDLC
+- [ ] Identify use cases for AI-assisted development in AEM
+
+### 2. Create AI-Ready Requirements
+- [ ] Write PRDs optimized for AI agent consumption
+- [ ] Structure requirements for automated decomposition
+- [ ] Define acceptance criteria that AI can validate
+
+### 3. Apply BMAD Methodology
+- [ ] Navigate all 6 BMAD phases for AEM projects
+- [ ] Generate architecture documents with AI assistance
+- [ ] Create component specifications from business requirements
+
+### 4. Manage AI Agent Tasks with BEAD
+- [ ] Create and track tasks in the BEAD system
+- [ ] Define task dependencies and hierarchies
+- [ ] Monitor AI agent progress across sessions
+
+### 5. Orchestrate Multi-Agent Workflows
+- [ ] Configure GasTown for team coordination
+- [ ] Assign specialized agents to appropriate tasks
+- [ ] Aggregate results from parallel agent work
+
+### 6. Build Production AEM Workflows
+- [ ] Implement enterprise workflow processes
+- [ ] Integrate external services (antivirus, notifications)
+- [ ] Deploy and test in AEM Cloud Service
+
+---
+
+## Target Audience
+
+| Role | What You'll Learn |
+|------|-------------------|
+| **AEM Developers** | Accelerate component and workflow development with AI |
+| **Technical Architects** | Design AI-assisted architecture workflows |
+| **Project Managers** | Manage AI agent teams and track progress |
+| **DevOps Engineers** | Automate CI/CD with agent orchestration |
+| **Technical Leads** | Lead hybrid human-AI development teams |
+
+---
+
+## Prerequisites
+
+### Technical Requirements
+- Java 11+ development experience
+- Familiarity with AEM concepts (Sling, OSGi, JCR)
+- Basic understanding of workflows and DAM
+- Git version control knowledge
+
+### Environment Setup
+- AEM Cloud Service SDK (2024.11+) or AEM 6.5.x
+- Maven 3.8+
+- Docker Desktop (for ClamAV integration)
+- IDE with AEM support (VS Code + AEM extension, IntelliJ)
+
+### AI Tools
+- Claude Code CLI or similar AI coding assistant
+- Access to Claude API (for GasTown orchestration)
+
+---
+
+## Course Modules
+
+### Module 1: Introduction to Agentic Development (2 hours)
+- What is agentic AI development?
+- The BMAD-BEAD-GasTown ecosystem
+- Case study introduction: Secure Asset Approval Workflow
+- **Lab 1.1**: Environment setup and verification
+
+### Module 2: Product Requirements with AI (3 hours)
+- Writing AI-optimized PRDs
+- Structured requirements for agent decomposition
+- Acceptance criteria and validation rules
+- **Lab 2.1**: Create PRD for Secure Asset Workflow
+- **Lab 2.2**: AI-assisted requirements analysis
+
+### Module 3: BMAD Phases 00-02 - Discovery & Design (4 hours)
+- Phase 00: Project initialization
+- Phase 01: Business discovery
+- Phase 02: Model definition
+- **Lab 3.1**: Generate user personas with AI
+- **Lab 3.2**: Create content models from requirements
+- **Lab 3.3**: Design information architecture
+
+### Module 4: BMAD Phases 03-04 - Architecture & Development (6 hours)
+- Phase 03: Technical architecture
+- Phase 04: Development sprint
+- Component specifications and contracts
+- **Lab 4.1**: Generate architecture diagrams with AI
+- **Lab 4.2**: Create workflow process specifications
+- **Lab 4.3**: Implement AntivirusScanService with AI pair programming
+
+### Module 5: BEAD Task Management (3 hours)
+- Creating BEAD task hierarchies
+- Dependency tracking and resolution
+- Session persistence and context management
+- **Lab 5.1**: Define BEAD tasks for workflow components
+- **Lab 5.2**: Track implementation progress
+- **Lab 5.3**: Handle task dependencies
+
+### Module 6: GasTown Multi-Agent Orchestration (4 hours)
+- Mayor AI and specialized agents
+- Workflow definitions and triggers
+- Result aggregation and reporting
+- **Lab 6.1**: Configure GasTown for the project
+- **Lab 6.2**: Run parallel agent development
+- **Lab 6.3**: Coordinate testing and review agents
+
+### Module 7: BMAD Phase 05 - Testing & Deployment (4 hours)
+- AI-generated test cases
+- Integration testing strategies
+- Cloud Manager deployment
+- **Lab 7.1**: Generate unit tests with AI
+- **Lab 7.2**: Create integration test scenarios
+- **Lab 7.3**: Deploy to AEM Cloud Service
+
+### Module 8: Operations & Continuous Improvement (2 hours)
+- Monitoring and observability
+- Security considerations
+- Iterating with AI feedback
+- **Lab 8.1**: Set up monitoring dashboards
+- **Lab 8.2**: Security review with AI agents
+
+---
+
+## Course Materials
+
+### Included Resources
+```
+course/
+├── 00-course-overview/        # This document
+│   ├── README.md
+│   ├── PREREQUISITES.md
+│   └── ENVIRONMENT-SETUP.md
+├── 01-prd/                    # Product Requirements
+│   ├── secure-asset-workflow-prd.md
+│   └── requirements-checklist.md
+├── 02-bmad-phases/            # BMAD Phase Documents
+│   ├── phase-00-initialization.md
+│   ├── phase-01-discovery.md
+│   ├── phase-02-models.md
+│   ├── phase-03-architecture.md
+│   ├── phase-04-development.md
+│   └── phase-05-testing.md
+├── 03-bead-tasks/             # BEAD Task Definitions
+│   ├── .issues/
+│   └── task-templates/
+├── 04-gastown-orchestration/  # GasTown Configuration
+│   ├── agents/
+│   └── workflows/
+├── 05-hands-on-labs/          # Step-by-Step Labs
+│   ├── lab-01-environment-setup/
+│   ├── lab-02-prd-creation/
+│   ├── lab-03-architecture/
+│   ├── lab-04-development/
+│   ├── lab-05-bead-tracking/
+│   ├── lab-06-gastown-orchestration/
+│   ├── lab-07-testing/
+│   └── lab-08-deployment/
+├── 06-instructor-guide/       # Teaching Materials
+│   ├── facilitation-guide.md
+│   ├── assessment-rubrics.md
+│   └── common-issues.md
+└── assets/                    # Diagrams and Images
+    └── diagrams/
+```
+
+---
+
+## Assessment & Certification
+
+### Hands-On Assessment
+- Complete all 8 lab exercises
+- Successfully deploy the Secure Asset Workflow
+- Demonstrate multi-agent orchestration
+
+### Knowledge Assessment
+- Multiple choice quiz on BMAD methodology
+- Architecture design review
+- Code review using AI agents
+
+### Certification
+Upon successful completion, participants receive:
+- **Agentic AEM Developer** certification
+- Digital badge for LinkedIn
+- Access to advanced courses
+
+---
+
+## Time Investment
+
+| Component | Duration |
+|-----------|----------|
+| Video Lectures | 8 hours |
+| Hands-On Labs | 12 hours |
+| Self-Study | 4 hours |
+| Assessment | 2 hours |
+| **Total** | **26 hours** |
+
+Recommended pace: 1 week intensive or 4 weeks part-time
+
+---
+
+## Support & Community
+
+- **Discussion Forum**: Ask questions and share solutions
+- **Office Hours**: Weekly live Q&A sessions
+- **GitHub Repository**: Access to all course code
+- **Slack Channel**: Connect with other learners
+
+---
+
+## Next Steps
+
+1. Review [Prerequisites](./PREREQUISITES.md)
+2. Complete [Environment Setup](./ENVIRONMENT-SETUP.md)
+3. Begin [Module 1: Introduction](../01-prd/README.md)
+
+---
+
+*This course is part of the **Agentic Development for Enterprise** series.*

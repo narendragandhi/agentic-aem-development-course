@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Email Notification Templates for Workflow Processes
+
+    Templates are stored here and used by the NotificationProcess
+    to send templated emails at various workflow stages.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="sling:Folder"
+    jcr:title="Workflow Notification Templates">
+
+    <!-- Revision Required Template -->
+    <revision_required
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Revision Required Notification"
+        subject="[Action Required] ${workflowTitle} - Revisions Needed"
+        template="/etc/notification/email/workflow/revision_required.html"/>
+
+    <!-- Publish Success Template -->
+    <publish_success
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Publication Success Notification"
+        subject="[Published] ${workflowTitle} - Content Successfully Published"
+        template="/etc/notification/email/workflow/publish_success.html"/>
+
+    <!-- Asset Processed Template -->
+    <asset_processed
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Asset Processing Complete Notification"
+        subject="[Complete] ${workflowTitle} - Asset Processing Finished"
+        template="/etc/notification/email/workflow/asset_processed.html"/>
+
+    <!-- Rejection Template -->
+    <rejection
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Content Rejection Notification"
+        subject="[Rejected] ${workflowTitle} - Content Not Approved"
+        template="/etc/notification/email/workflow/rejection.html"/>
+
+    <!-- Escalation Template -->
+    <escalation
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Escalation Notification"
+        subject="[Escalated] ${workflowTitle} - Review Required at Higher Level"
+        template="/etc/notification/email/workflow/escalation.html"/>
+
+</jcr:root>

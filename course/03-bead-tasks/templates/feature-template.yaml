@@ -1,0 +1,57 @@
+# BEAD Feature Template
+# Features group related tasks under an epic
+
+id: "${PREFIX}-${SEQUENCE}"  # e.g., SAW-010
+type: feature
+title: "${FEATURE_TITLE}"
+status: pending
+priority: high
+
+parent: "${EPIC_ID}"
+owner: "${TEAM_OR_PERSON}"
+
+created: "${ISO_TIMESTAMP}"
+updated: "${ISO_TIMESTAMP}"
+
+description: |
+  High-level description of the feature.
+
+  This feature enables:
+  - Capability 1
+  - Capability 2
+  - Capability 3
+
+business_value: |
+  Why this feature matters to the business.
+
+acceptance_criteria:
+  - "Overall criterion 1 for feature completion"
+  - "Overall criterion 2 for feature completion"
+  - "Overall criterion 3 for feature completion"
+
+tasks:
+  - id: "${TASK_1_ID}"
+    title: "First task"
+    status: pending
+  - id: "${TASK_2_ID}"
+    title: "Second task"
+    status: pending
+  - id: "${TASK_3_ID}"
+    title: "Third task"
+    status: pending
+
+progress:
+  total_tasks: 3
+  completed_tasks: 0
+  percentage: 0
+
+dependencies:
+  - id: "${DEP_FEATURE_ID}"
+    type: requires
+    status: pending
+
+risks:
+  - description: "Potential risk"
+    probability: medium
+    impact: high
+    mitigation: "How to mitigate"

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/libs/settings/wcm/designs/default"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:primaryType="cq:WorkflowModel"
+        jcr:title="Multi-Level Approval Workflow"
+        sling:resourceType="cq/workflow/components/pages/model"
+        description="Enterprise approval workflow with Team Lead, Manager, and Director levels with escalation and delegation support"
+        tags="[workflow:wcm,workflow:enterprise]"
+        title="Multi-Level Approval Workflow">
+        <flow jcr:primaryType="nt:unstructured">
+            <node0
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Start"
+                sling:resourceType="cq/workflow/components/model/start"
+                type="START">
+                <metaData jcr:primaryType="nt:unstructured"/>
+            </node0>
+            <node1
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Initial Validation"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Validate content completeness and format"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.ContentValidationProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </node1>
+            <node2
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Level 1: Team Lead Review"
+                sling:resourceType="cq/workflow/components/model/dynamicparticipant"
+                description="Assign to appropriate team lead based on content type"
+                type="DYNAMIC_PARTICIPANT">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    DYNAMIC_PARTICIPANT="com.demo.workflow.process.TeamLeadParticipantChooser"/>
+            </node2>
+            <node3
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Team Lead Decision"
+                sling:resourceType="cq/workflow/components/model/orsplit"
+                description="Branch based on team lead decision"
+                type="OR_SPLIT">
+                <metaData jcr:primaryType="nt:unstructured">
+                    <branches jcr:primaryType="nt:unstructured">
+                        <branch0
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level1Decision', '') == 'approved'; }"/>
+                        <branch1
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level1Decision', '') == 'rejected'; }"/>
+                        <branch2
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level1Decision', '') == 'escalate'; }"/>
+                    </branches>
+                </metaData>
+            </node3>
+            <node4
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejection Notification (L1)"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Notify author of rejection with feedback"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="rejection"
+                    level="1"/>
+            </node4>
+            <node5
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Level 2: Manager Review"
+                sling:resourceType="cq/workflow/components/model/dynamicparticipant"
+                description="Escalate to manager for review"
+                type="DYNAMIC_PARTICIPANT">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    DYNAMIC_PARTICIPANT="com.demo.workflow.process.ManagerParticipantChooser"/>
+            </node5>
+            <node6
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Policy Compliance Check"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Validate against organizational policies"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.PolicyValidationProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </node6>
+            <node7
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Manager Decision"
+                sling:resourceType="cq/workflow/components/model/orsplit"
+                description="Branch based on manager decision"
+                type="OR_SPLIT">
+                <metaData jcr:primaryType="nt:unstructured">
+                    <branches jcr:primaryType="nt:unstructured">
+                        <branch0
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level2Decision', '') == 'approved'; }"/>
+                        <branch1
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level2Decision', '') == 'rejected'; }"/>
+                        <branch2
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level2Decision', '') == 'delegate'; }"/>
+                        <branch3
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level2Decision', '') == 'escalate'; }"/>
+                    </branches>
+                </metaData>
+            </node7>
+            <node8
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejection Notification (L2)"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Notify author of rejection with manager feedback"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="rejection"
+                    level="2"/>
+            </node8>
+            <node9
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Delegate Task"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Delegate workflow to another participant"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.WorkflowDelegationProcess"
+                    PROCESS_AUTO_ADVANCE="false"/>
+            </node9>
+            <node10
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Level 3: Director Review"
+                sling:resourceType="cq/workflow/components/model/participant"
+                description="Final review by director"
+                type="PARTICIPANT">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PARTICIPANT="content-directors"/>
+            </node10>
+            <node11
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Director Decision"
+                sling:resourceType="cq/workflow/components/model/orsplit"
+                description="Final approval decision"
+                type="OR_SPLIT">
+                <metaData jcr:primaryType="nt:unstructured">
+                    <branches jcr:primaryType="nt:unstructured">
+                        <branch0
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level3Decision', '') == 'approved'; }"/>
+                        <branch1
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level3Decision', '') == 'rejected'; }"/>
+                    </branches>
+                </metaData>
+            </node11>
+            <node12
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejection Notification (L3)"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Notify author of director rejection"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="rejection"
+                    level="3"/>
+            </node12>
+            <node13
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Publish Approved Content"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Replicate content to publish instance"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.ReplicationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    replicationAction="activate"
+                    trackInitiator="true"/>
+            </node13>
+            <node14
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Create Audit Record"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Create audit trail of approval process"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.AuditLogProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </node14>
+            <node15
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Publication Notification"
+                sling:resourceType="cq:workflow/components/model/process"
+                description="Notify stakeholders of successful publication"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="publish_success"/>
+            </node15>
+            <node16
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Complete"
+                sling:resourceType="cq/workflow/components/model/end"
+                type="END">
+                <metaData jcr:primaryType="nt:unstructured"/>
+            </node16>
+            <node17
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejected"
+                sling:resourceType="cq/workflow/components/model/end"
+                type="END">
+                <metaData jcr:primaryType="nt:unstructured"/>
+            </node17>
+            <transitions jcr:primaryType="nt:unstructured">
+                <transition0 jcr:primaryType="nt:unstructured" from="node0" to="node1"/>
+                <transition1 jcr:primaryType="nt:unstructured" from="node1" to="node2"/>
+                <transition2 jcr:primaryType="nt:unstructured" from="node2" to="node3"/>
+                <transition3 jcr:primaryType="nt:unstructured" from="node3" to="node5" rule="branch0"/>
+                <transition4 jcr:primaryType="nt:unstructured" from="node3" to="node4" rule="branch1"/>
+                <transition5 jcr:primaryType="nt:unstructured" from="node3" to="node10" rule="branch2"/>
+                <transition6 jcr:primaryType="nt:unstructured" from="node4" to="node17"/>
+                <transition7 jcr:primaryType="nt:unstructured" from="node5" to="node6"/>
+                <transition8 jcr:primaryType="nt:unstructured" from="node6" to="node7"/>
+                <transition9 jcr:primaryType="nt:unstructured" from="node7" to="node13" rule="branch0"/>
+                <transition10 jcr:primaryType="nt:unstructured" from="node7" to="node8" rule="branch1"/>
+                <transition11 jcr:primaryType="nt:unstructured" from="node7" to="node9" rule="branch2"/>
+                <transition12 jcr:primaryType="nt:unstructured" from="node7" to="node10" rule="branch3"/>
+                <transition13 jcr:primaryType="nt:unstructured" from="node8" to="node17"/>
+                <transition14 jcr:primaryType="nt:unstructured" from="node9" to="node5"/>
+                <transition15 jcr:primaryType="nt:unstructured" from="node10" to="node11"/>
+                <transition16 jcr:primaryType="nt:unstructured" from="node11" to="node13" rule="branch0"/>
+                <transition17 jcr:primaryType="nt:unstructured" from="node11" to="node12" rule="branch1"/>
+                <transition18 jcr:primaryType="nt:unstructured" from="node12" to="node17"/>
+                <transition19 jcr:primaryType="nt:unstructured" from="node13" to="node14"/>
+                <transition20 jcr:primaryType="nt:unstructured" from="node14" to="node15"/>
+                <transition21 jcr:primaryType="nt:unstructured" from="node15" to="node16"/>
+            </transitions>
+        </flow>
+    </jcr:content>
+</jcr:root>

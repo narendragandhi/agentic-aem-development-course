@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Workflow Launcher: Secure Asset Upload
+
+    Triggers the Secure Asset Approval Workflow when new assets
+    are uploaded to designated folders.
+
+    Target Paths:
+    - /content/dam/secure-assets/.*
+    - /content/dam/uploads/.*
+    - /content/dam/pending-approval/.*
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:WorkflowLauncher"
+    jcr:description="Triggers antivirus scan and multi-level approval for asset uploads"
+    conditions="jcr:content/jcr:mimeType"
+    enabled="{Boolean}true"
+    eventType="{Long}1"
+    excludeList=""
+    glob="/content/dam/(secure-assets|uploads|pending-approval)/.*"
+    nodetype="dam:Asset"
+    runModes="author"
+    workflow="/conf/global/settings/workflow/models/secure-asset-approval"/>

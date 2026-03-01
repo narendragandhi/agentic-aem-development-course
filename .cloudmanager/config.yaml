@@ -1,0 +1,102 @@
+# Cloud Manager Pipeline Configuration
+# https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/configuring-pipelines/configuring-production-pipelines.html
+
+kind: "CM_BUILD"
+version: 1
+
+# Build Environment Configuration
+build:
+  # Java version (11 is standard for AEM Cloud Service)
+  javaVersion: "11"
+
+  # Maven version (3.8+ recommended)
+  mavenVersion: "3.8"
+
+  # Node version for frontend builds (if applicable)
+  nodeVersion: "18"
+
+  # Build-time environment variables
+  # Sensitive values should use Cloud Manager environment variables
+  env:
+    # Example: Configure test environments
+    MAVEN_OPTS: "-Xmx4g"
+
+# Pipeline-specific configurations
+pipelines:
+
+  # Code Quality Pipeline (runs on PR / feature branches)
+  code-quality:
+    triggers:
+      - push
+    steps:
+      - name: "Build"
+        type: "BUILD"
+      - name: "Unit Tests"
+        type: "UNIT_TESTING"
+      - name: "Code Scanning"
+        type: "CODE_SCANNING"
+
+  # Full Stack Pipeline (Dev -> Stage -> Prod)
+  full-stack:
+    triggers:
+      - manual
+    targets:
+      - dev
+      - stage
+      - prod
+    steps:
+      - name: "Build"
+        type: "BUILD"
+      - name: "Unit Tests"
+        type: "UNIT_TESTING"
+      - name: "Code Scanning"
+        type: "CODE_SCANNING"
+      - name: "Deploy to Dev"
+        type: "DEPLOY"
+        target: "dev"
+      - name: "Functional Tests"
+        type: "FUNCTIONAL_TESTING"
+        target: "dev"
+      - name: "Deploy to Stage"
+        type: "DEPLOY"
+        target: "stage"
+        approval: "MANUAL"
+      - name: "Performance Tests"
+        type: "PERFORMANCE_TESTING"
+        target: "stage"
+      - name: "Deploy to Production"
+        type: "DEPLOY"
+        target: "prod"
+        approval: "MANUAL"
+
+# Dispatcher Configuration Validation
+dispatcher:
+  # Enable dispatcher validation
+  validate: true
+
+# Content Package Validation
+packages:
+  # Validate package structure
+  validate: true
+
+  # Check for banned packages
+  bannedPackages:
+    - "acs-aem-commons-all"  # Should use individual features
+
+# Performance Testing Configuration
+performance:
+  # Load test configuration
+  loadTest:
+    duration: "5m"
+    virtualUsers: 100
+    rampUp: "1m"
+
+# Security Scanning Configuration
+security:
+  # OWASP dependency check
+  dependencyCheck: true
+
+  # SonarQube analysis
+  sonarQube:
+    enabled: true
+    qualityGate: "STRICT"

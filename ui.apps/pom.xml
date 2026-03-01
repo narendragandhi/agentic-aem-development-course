@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.agentic.aem</groupId>
+        <artifactId>agentic-aem-development-course</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>agentic-aem-course.ui.apps</artifactId>
+    <packaging>content-package</packaging>
+
+    <name>Agentic AEM Course - UI Apps</name>
+    <description>UI Apps package with workflow components and configurations</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>filevault-package-maven-plugin</artifactId>
+                <configuration>
+                    <group>com.agentic.aem</group>
+                    <name>agentic-aem-course.ui.apps</name>
+                    <packageType>application</packageType>
+                    <accessControlHandling>ignore</accessControlHandling>
+                    <properties>
+                        <cloudManagerTarget>none</cloudManagerTarget>
+                    </properties>
+                    <validatorsSettings>
+                        <!-- Allow OSGi configs in this APPLICATION package -->
+                        <jackrabbit-packagetype>
+                            <isDisabled>true</isDisabled>
+                        </jackrabbit-packagetype>
+                    </validatorsSettings>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- AEM SDK for compilation -->
+        <dependency>
+            <groupId>com.adobe.aem</groupId>
+            <artifactId>aem-sdk-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>

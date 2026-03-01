@@ -1,0 +1,11 @@
+<'sling'='http://sling.apache.org/jcr/sling/1.0'>
+<'nt'='http://www.jcp.org/jcr/nt/1.0'>
+<'mix'='http://www.jcp.org/jcr/mix/1.0'>
+<'dam'='http://www.day.com/dam/1.0'>
+
+// Custom mixin for antivirus metadata
+[dam:AntivirusScanned] mixin
+  - dam:avScanStatus (STRING)
+  - dam:avScanDate (DATE)
+  - dam:avThreatName (STRING)
+  - dam:avScanEngine (STRING)

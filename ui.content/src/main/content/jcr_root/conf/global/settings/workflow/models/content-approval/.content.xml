@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/libs/settings/wcm/designs/default"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:primaryType="cq:WorkflowModel"
+        jcr:title="Content Approval Workflow"
+        sling:resourceType="cq/workflow/components/pages/model"
+        description="Multi-stage content approval workflow with review and publish steps"
+        tags="[workflow:dam,workflow:wcm]"
+        title="Content Approval Workflow">
+        <flow jcr:primaryType="nt:unstructured">
+            <node0
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Start"
+                sling:resourceType="cq/workflow/components/model/start"
+                type="START">
+                <metaData jcr:primaryType="nt:unstructured"/>
+            </node0>
+            <node1
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Validate Content"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Validates content against business rules before review"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.ContentValidationProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </node1>
+            <node2
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Assign to Reviewer"
+                sling:resourceType="cq/workflow/components/model/participant"
+                description="Content assigned to reviewer for initial review"
+                type="PARTICIPANT">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PARTICIPANT="content-reviewers"/>
+            </node2>
+            <node3
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Review Decision"
+                sling:resourceType="cq/workflow/components/model/orsplit"
+                description="Branch based on reviewer decision"
+                type="OR_SPLIT">
+                <metaData jcr:primaryType="nt:unstructured">
+                    <branches jcr:primaryType="nt:unstructured">
+                        <branch0
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('reviewerApproved', '') == 'true'; }"/>
+                        <branch1
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('reviewerApproved', '') == 'false'; }"/>
+                    </branches>
+                </metaData>
+            </node3>
+            <node4
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Final Approval"
+                sling:resourceType="cq/workflow/components/model/participant"
+                description="Content sent to approver for final sign-off"
+                type="PARTICIPANT">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PARTICIPANT="content-approvers"/>
+            </node4>
+            <node5
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Notify Author - Revision Required"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Send notification to author about required revisions"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="revision_required"/>
+            </node5>
+            <node6
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Approval Decision"
+                sling:resourceType="cq/workflow/components/model/orsplit"
+                description="Branch based on approver decision"
+                type="OR_SPLIT">
+                <metaData jcr:primaryType="nt:unstructured">
+                    <branches jcr:primaryType="nt:unstructured">
+                        <branch0
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('approved', '') == 'true'; }"/>
+                        <branch1
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('approved', '') == 'false'; }"/>
+                    </branches>
+                </metaData>
+            </node6>
+            <node7
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Publish Content"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Publish approved content to publish instance"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.ReplicationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    replicationAction="activate"/>
+            </node7>
+            <node8
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Send Publish Notification"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Notify stakeholders about successful publication"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="publish_success"/>
+            </node8>
+            <node9
+                jcr:primaryType="nt:unstructured"
+                jcr:title="End"
+                sling:resourceType="cq/workflow/components/model/end"
+                type="END">
+                <metaData jcr:primaryType="nt:unstructured"/>
+            </node9>
+            <transitions jcr:primaryType="nt:unstructured">
+                <transition0 jcr:primaryType="nt:unstructured" from="node0" to="node1"/>
+                <transition1 jcr:primaryType="nt:unstructured" from="node1" to="node2"/>
+                <transition2 jcr:primaryType="nt:unstructured" from="node2" to="node3"/>
+                <transition3 jcr:primaryType="nt:unstructured" from="node3" to="node4" rule="branch0"/>
+                <transition4 jcr:primaryType="nt:unstructured" from="node3" to="node5" rule="branch1"/>
+                <transition5 jcr:primaryType="nt:unstructured" from="node5" to="node9"/>
+                <transition6 jcr:primaryType="nt:unstructured" from="node4" to="node6"/>
+                <transition7 jcr:primaryType="nt:unstructured" from="node6" to="node7" rule="branch0"/>
+                <transition8 jcr:primaryType="nt:unstructured" from="node6" to="node5" rule="branch1"/>
+                <transition9 jcr:primaryType="nt:unstructured" from="node7" to="node8"/>
+                <transition10 jcr:primaryType="nt:unstructured" from="node8" to="node9"/>
+            </transitions>
+        </flow>
+    </jcr:content>
+</jcr:root>

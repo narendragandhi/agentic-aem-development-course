@@ -1,0 +1,83 @@
+# BEAD Epic Template
+# Epics are large initiatives containing multiple features
+
+id: "${PREFIX}-001"          # e.g., SAW-001
+type: epic
+title: "${EPIC_TITLE}"
+status: in_progress
+priority: critical
+
+owner: "${PRODUCT_OWNER}"
+start_date: "${START_DATE}"
+target_date: "${TARGET_DATE}"
+
+created: "${ISO_TIMESTAMP}"
+updated: "${ISO_TIMESTAMP}"
+
+description: |
+  High-level description of the epic and its scope.
+
+  This epic delivers:
+  - Major capability 1
+  - Major capability 2
+  - Major capability 3
+
+business_value: |
+  Strategic importance and expected business outcomes.
+
+  Key benefits:
+  - Benefit 1
+  - Benefit 2
+  - Benefit 3
+
+success_metrics:
+  - name: "Metric 1"
+    target: "100%"
+    current: "0%"
+  - name: "Metric 2"
+    target: "<24 hours"
+    current: "5 days"
+
+features:
+  - id: "${FEATURE_1_ID}"
+    title: "Feature 1"
+    status: pending
+  - id: "${FEATURE_2_ID}"
+    title: "Feature 2"
+    status: pending
+  - id: "${FEATURE_3_ID}"
+    title: "Feature 3"
+    status: pending
+
+risks:
+  - description: "Major risk 1"
+    probability: medium
+    impact: high
+    mitigation: "Mitigation strategy"
+
+stakeholders:
+  - role: "Product Owner"
+    team: "Product Team"
+  - role: "Technical Lead"
+    team: "Development Team"
+  - role: "QA Lead"
+    team: "Quality Team"
+
+references:
+  prd: "path/to/prd.md"
+  architecture: "path/to/architecture.md"
+
+progress:
+  total_features: 3
+  completed_features: 0
+  total_tasks: 0
+  completed_tasks: 0
+  percentage: 0
+
+timeline:
+  - phase: "Phase 1"
+    duration: "2 weeks"
+    status: pending
+    deliverables:
+      - "Deliverable 1"
+      - "Deliverable 2"

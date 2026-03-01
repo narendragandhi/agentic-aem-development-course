@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Secure Asset Approval Workflow
+
+    A comprehensive workflow that:
+    1. Scans uploaded assets for viruses/malware
+    2. Routes infected files to quarantine
+    3. Clean files proceed through multi-level approval
+
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+    │                     SECURE ASSET APPROVAL WORKFLOW                          │
+    ├─────────────────────────────────────────────────────────────────────────────┤
+    │                                                                             │
+    │   ┌─────────┐    ┌──────────┐    ┌──────────────────────────────────────┐  │
+    │   │  Start  │───▶│ AV Scan  │───▶│           Clean?                    │  │
+    │   └─────────┘    └──────────┘    └────────────┬─────────────────────────┘  │
+    │                                               │                            │
+    │                          ┌────────────────────┼────────────────────┐       │
+    │                          │                    │                    │       │
+    │                    ┌─────▼─────┐        ┌─────▼─────┐              │       │
+    │                    │   CLEAN   │        │ INFECTED  │              │       │
+    │                    │           │        │           │              │       │
+    │                    │  Level 1  │        │Quarantine │              │       │
+    │                    │  Review   │        │ + Notify  │              │       │
+    │                    └─────┬─────┘        └─────┬─────┘              │       │
+    │                          │                    │                    │       │
+    │                    ┌─────▼─────┐              │                    │       │
+    │                    │  Level 2  │              │                    │       │
+    │                    │  Manager  │              │                    │       │
+    │                    └─────┬─────┘              │                    │       │
+    │                          │                    │                    │       │
+    │                    ┌─────▼─────┐              │                    │       │
+    │                    │  Level 3  │              │                    │       │
+    │                    │ Director  │              │                    │       │
+    │                    └─────┬─────┘              │                    │       │
+    │                          │                    │                    │       │
+    │                    ┌─────▼─────┐        ┌─────▼─────┐              │       │
+    │                    │  Publish  │        │  Blocked  │              │       │
+    │                    │  + Notify │        │   End     │              │       │
+    │                    └─────┬─────┘        └───────────┘              │       │
+    │                          │                                         │       │
+    │                    ┌─────▼─────┐                                   │       │
+    │                    │ Complete  │                                   │       │
+    │                    └───────────┘                                   │       │
+    │                                                                             │
+    └─────────────────────────────────────────────────────────────────────────────┘
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/libs/settings/wcm/designs/default"
+        cq:template="/libs/cq/workflow/templates/model"
+        jcr:primaryType="cq:WorkflowModel"
+        jcr:title="Secure Asset Approval Workflow"
+        sling:resourceType="cq/workflow/components/pages/model"
+        description="Scans assets for viruses, quarantines threats, and routes clean files through multi-level approval"
+        tags="[workflow:dam,workflow:security,workflow:approval]"
+        title="Secure Asset Approval Workflow">
+        <flow jcr:primaryType="nt:unstructured">
+            <!-- START NODE -->
+            <node0
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Start"
+                sling:resourceType="cq/workflow/components/model/start"
+                type="START">
+                <metaData jcr:primaryType="nt:unstructured"/>
+            </node0>
+
+            <!-- ANTIVIRUS SCAN STEP -->
+            <node1
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Antivirus Scan"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Scan uploaded file for malware and viruses"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.AntivirusScanProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </node1>
+
+            <!-- AV SCAN RESULT DECISION -->
+            <node2
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Scan Result Check"
+                sling:resourceType="cq/workflow/components/model/orsplit"
+                description="Route based on antivirus scan result"
+                type="OR_SPLIT">
+                <metaData jcr:primaryType="nt:unstructured">
+                    <branches jcr:primaryType="nt:unstructured">
+                        <branch0
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('av.scanStatus', '') == 'CLEAN'; }"
+                            branchLabel="Clean - Continue to Approval"/>
+                        <branch1
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { var status = workflowData.getMetaDataMap().get('av.scanStatus', ''); return status == 'INFECTED' || status == 'ERROR'; }"
+                            branchLabel="Infected/Error - Quarantine"/>
+                    </branches>
+                </metaData>
+            </node2>
+
+            <!-- QUARANTINE PROCESS (for infected files) -->
+            <node3
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Quarantine Infected File"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Move infected file to quarantine and notify security"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.QuarantineProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </node3>
+
+            <!-- SECURITY NOTIFICATION -->
+            <node4
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Security Team Notification"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Notify security team of quarantined file"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="security_alert"
+                    notificationGroup="security-admins"/>
+            </node4>
+
+            <!-- LEVEL 1: CONTENT TYPE SPECIFIC REVIEW -->
+            <node5
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Level 1: Content Review"
+                sling:resourceType="cq/workflow/components/model/dynamicparticipant"
+                description="Initial review by content-type specialists"
+                type="DYNAMIC_PARTICIPANT">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    DYNAMIC_PARTICIPANT="com.demo.workflow.process.AssetApprovalParticipantChooser"
+                    approvalLevel="{Long}1"/>
+            </node5>
+
+            <!-- LEVEL 1 DECISION -->
+            <node6
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Level 1 Decision"
+                sling:resourceType="cq/workflow/components/model/orsplit"
+                description="Branch based on Level 1 reviewer decision"
+                type="OR_SPLIT">
+                <metaData jcr:primaryType="nt:unstructured">
+                    <branches jcr:primaryType="nt:unstructured">
+                        <branch0
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level1Decision', '') == 'approved'; }"
+                            branchLabel="Approved - Continue"/>
+                        <branch1
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level1Decision', '') == 'rejected'; }"
+                            branchLabel="Rejected"/>
+                        <branch2
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level1Decision', '') == 'revise'; }"
+                            branchLabel="Requires Revision"/>
+                    </branches>
+                </metaData>
+            </node6>
+
+            <!-- REJECTION NOTIFICATION (Level 1) -->
+            <node7
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejection Notification (L1)"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Notify uploader of rejection"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="rejection"
+                    level="1"/>
+            </node7>
+
+            <!-- REVISION REQUEST -->
+            <node8
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Request Revision"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Send revision request to asset owner"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="revision_required"/>
+            </node8>
+
+            <!-- LEVEL 2: MANAGER REVIEW -->
+            <node9
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Level 2: Manager Review"
+                sling:resourceType="cq/workflow/components/model/dynamicparticipant"
+                description="Manager/supervisor approval"
+                type="DYNAMIC_PARTICIPANT">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    DYNAMIC_PARTICIPANT="com.demo.workflow.process.AssetApprovalParticipantChooser"
+                    approvalLevel="{Long}2"/>
+            </node9>
+
+            <!-- LEVEL 2 DECISION -->
+            <node10
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Level 2 Decision"
+                sling:resourceType="cq/workflow/components/model/orsplit"
+                description="Branch based on manager decision"
+                type="OR_SPLIT">
+                <metaData jcr:primaryType="nt:unstructured">
+                    <branches jcr:primaryType="nt:unstructured">
+                        <branch0
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level2Decision', '') == 'approved'; }"
+                            branchLabel="Approved"/>
+                        <branch1
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level2Decision', '') == 'rejected'; }"
+                            branchLabel="Rejected"/>
+                        <branch2
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level2Decision', '') == 'escalate'; }"
+                            branchLabel="Escalate to Director"/>
+                    </branches>
+                </metaData>
+            </node10>
+
+            <!-- REJECTION NOTIFICATION (Level 2) -->
+            <node11
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejection Notification (L2)"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Notify uploader of manager rejection"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="rejection"
+                    level="2"/>
+            </node11>
+
+            <!-- LEVEL 3: DIRECTOR REVIEW (for escalated items) -->
+            <node12
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Level 3: Director Review"
+                sling:resourceType="cq/workflow/components/model/dynamicparticipant"
+                description="Final approval by director"
+                type="DYNAMIC_PARTICIPANT">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    DYNAMIC_PARTICIPANT="com.demo.workflow.process.AssetApprovalParticipantChooser"
+                    approvalLevel="{Long}3"/>
+            </node12>
+
+            <!-- LEVEL 3 DECISION -->
+            <node13
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Level 3 Decision"
+                sling:resourceType="cq/workflow/components/model/orsplit"
+                description="Final approval decision"
+                type="OR_SPLIT">
+                <metaData jcr:primaryType="nt:unstructured">
+                    <branches jcr:primaryType="nt:unstructured">
+                        <branch0
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level3Decision', '') == 'approved'; }"
+                            branchLabel="Approved"/>
+                        <branch1
+                            jcr:primaryType="nt:unstructured"
+                            condition="function check() { return workflowData.getMetaDataMap().get('level3Decision', '') == 'rejected'; }"
+                            branchLabel="Rejected"/>
+                    </branches>
+                </metaData>
+            </node13>
+
+            <!-- REJECTION NOTIFICATION (Level 3) -->
+            <node14
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejection Notification (L3)"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Notify uploader of director rejection"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="rejection"
+                    level="3"/>
+            </node14>
+
+            <!-- PUBLISH APPROVED ASSET -->
+            <node15
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Publish Asset"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Replicate approved asset to publish instance"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.ReplicationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    replicationAction="activate"/>
+            </node15>
+
+            <!-- APPROVAL SUCCESS NOTIFICATION -->
+            <node16
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Approval Success Notification"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Notify stakeholders of successful approval"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.NotificationProcess"
+                    PROCESS_AUTO_ADVANCE="true"
+                    notificationType="approval_success"/>
+            </node16>
+
+            <!-- AUDIT LOG -->
+            <node17
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Create Audit Record"
+                sling:resourceType="cq/workflow/components/model/process"
+                description="Create audit trail of approval process"
+                type="PROCESS">
+                <metaData
+                    jcr:primaryType="nt:unstructured"
+                    PROCESS="com.demo.workflow.process.AuditLogProcess"
+                    PROCESS_AUTO_ADVANCE="true"/>
+            </node17>
+
+            <!-- END: WORKFLOW COMPLETE -->
+            <node18
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Complete"
+                sling:resourceType="cq/workflow/components/model/end"
+                type="END">
+                <metaData jcr:primaryType="nt:unstructured"/>
+            </node18>
+
+            <!-- END: REJECTED -->
+            <node19
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Rejected"
+                sling:resourceType="cq/workflow/components/model/end"
+                type="END">
+                <metaData jcr:primaryType="nt:unstructured"/>
+            </node19>
+
+            <!-- END: QUARANTINED -->
+            <node20
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Quarantined"
+                sling:resourceType="cq/workflow/components/model/end"
+                type="END">
+                <metaData jcr:primaryType="nt:unstructured"/>
+            </node20>
+
+            <!-- TRANSITIONS -->
+            <transitions jcr:primaryType="nt:unstructured">
+                <!-- Start to AV Scan -->
+                <transition0 jcr:primaryType="nt:unstructured" from="node0" to="node1"/>
+
+                <!-- AV Scan to Decision -->
+                <transition1 jcr:primaryType="nt:unstructured" from="node1" to="node2"/>
+
+                <!-- AV Decision: Clean -> Level 1 Review -->
+                <transition2 jcr:primaryType="nt:unstructured" from="node2" to="node5" rule="branch0"/>
+
+                <!-- AV Decision: Infected -> Quarantine -->
+                <transition3 jcr:primaryType="nt:unstructured" from="node2" to="node3" rule="branch1"/>
+
+                <!-- Quarantine -> Security Notification -->
+                <transition4 jcr:primaryType="nt:unstructured" from="node3" to="node4"/>
+
+                <!-- Security Notification -> Quarantined End -->
+                <transition5 jcr:primaryType="nt:unstructured" from="node4" to="node20"/>
+
+                <!-- Level 1 Review -> Level 1 Decision -->
+                <transition6 jcr:primaryType="nt:unstructured" from="node5" to="node6"/>
+
+                <!-- Level 1 Approved -> Level 2 Review -->
+                <transition7 jcr:primaryType="nt:unstructured" from="node6" to="node9" rule="branch0"/>
+
+                <!-- Level 1 Rejected -> Rejection Notification -->
+                <transition8 jcr:primaryType="nt:unstructured" from="node6" to="node7" rule="branch1"/>
+
+                <!-- Level 1 Revise -> Revision Request -->
+                <transition9 jcr:primaryType="nt:unstructured" from="node6" to="node8" rule="branch2"/>
+
+                <!-- Level 1 Rejection Notification -> Rejected End -->
+                <transition10 jcr:primaryType="nt:unstructured" from="node7" to="node19"/>
+
+                <!-- Revision Request -> Rejected End (workflow ends, user resubmits) -->
+                <transition11 jcr:primaryType="nt:unstructured" from="node8" to="node19"/>
+
+                <!-- Level 2 Review -> Level 2 Decision -->
+                <transition12 jcr:primaryType="nt:unstructured" from="node9" to="node10"/>
+
+                <!-- Level 2 Approved -> Publish -->
+                <transition13 jcr:primaryType="nt:unstructured" from="node10" to="node15" rule="branch0"/>
+
+                <!-- Level 2 Rejected -> Rejection Notification -->
+                <transition14 jcr:primaryType="nt:unstructured" from="node10" to="node11" rule="branch1"/>
+
+                <!-- Level 2 Escalate -> Level 3 Review -->
+                <transition15 jcr:primaryType="nt:unstructured" from="node10" to="node12" rule="branch2"/>
+
+                <!-- Level 2 Rejection Notification -> Rejected End -->
+                <transition16 jcr:primaryType="nt:unstructured" from="node11" to="node19"/>
+
+                <!-- Level 3 Review -> Level 3 Decision -->
+                <transition17 jcr:primaryType="nt:unstructured" from="node12" to="node13"/>
+
+                <!-- Level 3 Approved -> Publish -->
+                <transition18 jcr:primaryType="nt:unstructured" from="node13" to="node15" rule="branch0"/>
+
+                <!-- Level 3 Rejected -> Rejection Notification -->
+                <transition19 jcr:primaryType="nt:unstructured" from="node13" to="node14" rule="branch1"/>
+
+                <!-- Level 3 Rejection Notification -> Rejected End -->
+                <transition20 jcr:primaryType="nt:unstructured" from="node14" to="node19"/>
+
+                <!-- Publish -> Approval Success Notification -->
+                <transition21 jcr:primaryType="nt:unstructured" from="node15" to="node16"/>
+
+                <!-- Approval Success -> Audit Log -->
+                <transition22 jcr:primaryType="nt:unstructured" from="node16" to="node17"/>
+
+                <!-- Audit Log -> Complete -->
+                <transition23 jcr:primaryType="nt:unstructured" from="node17" to="node18"/>
+            </transitions>
+        </flow>
+    </jcr:content>
+</jcr:root>

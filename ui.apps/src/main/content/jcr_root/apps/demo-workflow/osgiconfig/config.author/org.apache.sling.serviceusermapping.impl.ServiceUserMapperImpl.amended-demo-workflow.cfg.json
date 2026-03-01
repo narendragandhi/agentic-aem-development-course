@@ -1,0 +1,6 @@
+{
+    "user.mapping": [
+        "com.demo.workflow.core:workflow-service=[content-reader-service]",
+        "com.demo.workflow.core:asset-processor=[content-writer-service]"
+    ]
+}

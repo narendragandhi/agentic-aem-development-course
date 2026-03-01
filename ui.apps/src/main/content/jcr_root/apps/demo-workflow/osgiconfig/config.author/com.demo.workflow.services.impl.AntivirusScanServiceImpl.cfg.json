@@ -1,0 +1,9 @@
+{
+    "enabled": true,
+    "scanMode": "MOCK",
+    "clamavHost": "localhost",
+    "clamavPort": 3310,
+    "connectionTimeout": 5000,
+    "readTimeout": 30000,
+    "maxFileSize": 104857600
+}

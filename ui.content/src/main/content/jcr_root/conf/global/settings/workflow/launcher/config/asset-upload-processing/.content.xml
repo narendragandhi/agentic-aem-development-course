@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:WorkflowLauncher"
+    conditions="[jcr:content/metadata/dc:format=image/*]"
+    description="Triggers asset processing workflow for uploaded images"
+    enabled="{Boolean}true"
+    eventType="CREATED"
+    excludeList=""
+    nodetype="dam:Asset"
+    glob="/content/dam/demo-workflow/.*"
+    runModes="author"
+    workflow="/conf/global/settings/workflow/models/asset-processing"/>

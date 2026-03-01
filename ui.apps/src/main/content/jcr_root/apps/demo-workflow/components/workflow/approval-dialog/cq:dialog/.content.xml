@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Approval Dialog"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns">
+        <items jcr:primaryType="nt:unstructured">
+            <column
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/container">
+                <items jcr:primaryType="nt:unstructured">
+                    <comments
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/form/textarea"
+                        fieldLabel="Approver Comments"
+                        name="./metaData/comments"/>
+                    <rejectionReason
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                        fieldLabel="Reason for Rejection"
+                        name="./metaData/rejectionReason">
+                        <items jcr:primaryType="nt:unstructured">
+                            <none jcr:primaryType="nt:unstructured" text="N/A" value=""/>
+                            <incorrect
+                                jcr:primaryType="nt:unstructured"
+                                text="Incorrect Information"
+                                value="incorrect"/>
+                            <branding
+                                jcr:primaryType="nt:unstructured"
+                                text="Branding Violation"
+                                value="branding"/>
+                            <more-info
+                                jcr:primaryType="nt:unstructured"
+                                text="Needs More Information"
+                                value="more-info"/>
+                        </items>
+                    </rejectionReason>
+                </items>
+            </column>
+        </items>
+    </content>
+</jcr:root>

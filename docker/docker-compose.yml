@@ -1,0 +1,120 @@
+# Docker Compose Configuration
+# Agentic Development for AEM Course
+#
+# This file sets up the complete development environment including:
+# - ClamAV antivirus daemon
+# - Mock SMTP server for email testing
+# - Optional: AEM Cloud SDK (commented out - use local installation)
+#
+# Usage:
+#   docker-compose up -d              # Start all services
+#   docker-compose logs -f clamav     # Watch ClamAV logs
+#   docker-compose down               # Stop all services
+#   docker-compose down -v            # Stop and remove volumes
+
+version: '3.8'
+
+services:
+  # ============================================
+  # ClamAV Antivirus Daemon
+  # ============================================
+  # Open source antivirus engine for malware detection
+  # Exposes clamd on port 3310 for TCP connections
+  clamav:
+    image: clamav/clamav:latest
+    container_name: clamav-daemon
+    hostname: clamav
+    ports:
+      - "3310:3310"
+    volumes:
+      - clamav-data:/var/lib/clamav
+      - ./clamav/clamd.conf:/etc/clamav/clamd.conf:ro
+    environment:
+      # Set to 'true' to skip virus database updates (faster startup for testing)
+      - CLAMAV_NO_FRESHCLAMD=false
+    healthcheck:
+      test: ["CMD", "clamdscan", "--ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s  # DB download takes time
+    restart: unless-stopped
+    networks:
+      - aem-network
+
+  # ============================================
+  # Mock SMTP Server (MailHog)
+  # ============================================
+  # Catches all outgoing emails for testing
+  # Web UI: http://localhost:8025
+  # SMTP: localhost:1025
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    networks:
+      - aem-network
+
+  # ============================================
+  # Mock Slack Webhook (for testing)
+  # ============================================
+  # Captures webhook calls for verification
+  webhook-receiver:
+    image: tarampampam/webhook-tester:latest
+    container_name: webhook-tester
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+    networks:
+      - aem-network
+
+  # ============================================
+  # Optional: MongoDB (for additional state)
+  # ============================================
+  # Uncomment if using for BEAD persistence
+  # mongodb:
+  #   image: mongo:6.0
+  #   container_name: mongodb
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb-data:/data/db
+  #   networks:
+  #     - aem-network
+
+  # ============================================
+  # Optional: AEM Cloud SDK
+  # ============================================
+  # Note: For licensing reasons, use local installation
+  # This is just a template for reference
+  # aem-author:
+  #   build:
+  #     context: ./aem
+  #     dockerfile: Dockerfile
+  #   container_name: aem-author
+  #   ports:
+  #     - "4502:4502"
+  #   volumes:
+  #     - aem-author-data:/opt/aem/crx-quickstart
+  #   environment:
+  #     - AEM_RUNMODE=author,local
+  #   depends_on:
+  #     - clamav
+  #   networks:
+  #     - aem-network
+
+networks:
+  aem-network:
+    driver: bridge
+    name: aem-dev-network
+
+volumes:
+  clamav-data:
+    name: clamav-virus-db
+  # mongodb-data:
+  #   name: bead-mongodb-data
+  # aem-author-data:
+  #   name: aem-author-crx

@@ -1,0 +1,296 @@
+<!--/*
+    Annotation Editor Component
+
+    Visual annotation tool that allows reviewers to mark up content
+    with pins, highlights, rectangles, and freeform drawings.
+
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                   ANNOTATION EDITOR                             │
+    ├─────────────────────────────────────────────────────────────────┤
+    │  ┌───────────────────────────────────────────────────────────┐ │
+    │  │ Tools: [📌 Pin] [▭ Box] [✏️ Draw] [🔆 Highlight] [❌ Clear]│ │
+    │  │ Color: [🔴] [🟡] [🟢] [🔵]                                 │ │
+    │  └───────────────────────────────────────────────────────────┘ │
+    │                                                                 │
+    │  ┌───────────────────────────────────────────────────────────┐ │
+    │  │                                                           │ │
+    │  │     ┌──────────────────────────────────────────────────┐  │ │
+    │  │     │                                                  │  │ │
+    │  │     │              CONTENT PREVIEW                     │  │ │
+    │  │     │                                                  │  │ │
+    │  │     │    📌 ◄── Click to add annotation               │  │ │
+    │  │     │    │                                             │  │ │
+    │  │     │    │   ┌─────────────────────────┐              │  │ │
+    │  │     │    └──▶│ "Update this heading"  │              │  │ │
+    │  │     │        │  - John Smith          │              │  │ │
+    │  │     │        └─────────────────────────┘              │  │ │
+    │  │     │                                                  │  │ │
+    │  │     │        ┌─────────────────┐                      │  │ │
+    │  │     │        │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ ◄── Highlight box   │  │ │
+    │  │     │        └─────────────────┘                      │  │ │
+    │  │     │                                                  │  │ │
+    │  │     └──────────────────────────────────────────────────┘  │ │
+    │  │                                                           │ │
+    │  └───────────────────────────────────────────────────────────┘ │
+    │                                                                 │
+    │  ┌───────────────────────────────────────────────────────────┐ │
+    │  │ ANNOTATIONS LIST                                          │ │
+    │  │ ┌─────────────────────────────────────────────────────┐   │ │
+    │  │ │ 📌 #1: "Update this heading to match brand"        │   │ │
+    │  │ │      John Smith • Jan 15, 2024 • [Edit] [Delete]   │   │ │
+    │  │ └─────────────────────────────────────────────────────┘   │ │
+    │  │ ┌─────────────────────────────────────────────────────┐   │ │
+    │  │ │ ▭ #2: "Image resolution too low"                   │   │ │
+    │  │ │      Jane Doe • Jan 15, 2024 • [Edit] [Delete]     │   │ │
+    │  │ └─────────────────────────────────────────────────────┘   │ │
+    │  └───────────────────────────────────────────────────────────┘ │
+    │                                                                 │
+    └─────────────────────────────────────────────────────────────────┘
+*/-->
+<sly data-sly-use.editor="${'com.demo.workflow.models.AnnotationEditorModel'}"/>
+
+<div class="workflow-annotation-editor"
+     data-content-path="${editor.contentPath}"
+     data-workflow-id="${editor.workflowId}">
+
+    <!-- Annotation Toolbar -->
+    <div class="annotation-toolbar">
+        <div class="tool-group tools">
+            <span class="tool-label">Tools:</span>
+            <button class="tool-button active" data-tool="pin" title="Pin Annotation">
+                <coral-icon icon="pinOff" size="S"></coral-icon>
+                <span>Pin</span>
+            </button>
+            <button class="tool-button" data-tool="rectangle" title="Rectangle Selection">
+                <coral-icon icon="rectangle" size="S"></coral-icon>
+                <span>Box</span>
+            </button>
+            <button class="tool-button" data-tool="draw" title="Freeform Draw">
+                <coral-icon icon="draw" size="S"></coral-icon>
+                <span>Draw</span>
+            </button>
+            <button class="tool-button" data-tool="highlight" title="Highlight Area">
+                <coral-icon icon="highlight" size="S"></coral-icon>
+                <span>Highlight</span>
+            </button>
+            <button class="tool-button" data-tool="arrow" title="Arrow Pointer">
+                <coral-icon icon="arrowRight" size="S"></coral-icon>
+                <span>Arrow</span>
+            </button>
+            <div class="tool-separator"></div>
+            <button class="tool-button" data-action="undo" title="Undo Last Action">
+                <coral-icon icon="undo" size="S"></coral-icon>
+            </button>
+            <button class="tool-button" data-action="redo" title="Redo">
+                <coral-icon icon="redo" size="S"></coral-icon>
+            </button>
+            <button class="tool-button danger" data-action="clear-all" title="Clear All Annotations">
+                <coral-icon icon="delete" size="S"></coral-icon>
+                <span>Clear</span>
+            </button>
+        </div>
+
+        <div class="tool-group colors">
+            <span class="tool-label">Color:</span>
+            <button class="color-button active" data-color="#E53935" style="background-color: #E53935" title="Red"></button>
+            <button class="color-button" data-color="#FDD835" style="background-color: #FDD835" title="Yellow"></button>
+            <button class="color-button" data-color="#43A047" style="background-color: #43A047" title="Green"></button>
+            <button class="color-button" data-color="#1E88E5" style="background-color: #1E88E5" title="Blue"></button>
+            <button class="color-button" data-color="#8E24AA" style="background-color: #8E24AA" title="Purple"></button>
+            <button class="color-button" data-color="#FF6D00" style="background-color: #FF6D00" title="Orange"></button>
+        </div>
+
+        <div class="tool-group options">
+            <label class="tool-option">
+                <input type="checkbox" id="showLabels" checked/>
+                <span>Show Labels</span>
+            </label>
+            <label class="tool-option">
+                <input type="checkbox" id="showResolved"/>
+                <span>Show Resolved</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Annotation Canvas Container -->
+    <div class="annotation-canvas-container">
+        <!-- Content Preview (image or iframe) -->
+        <div class="content-layer">
+            <sly data-sly-test="${editor.isAsset}">
+                <img src="${editor.contentUrl}"
+                     alt="Content Preview"
+                     class="annotation-content-image"
+                     data-original-width="${editor.originalWidth}"
+                     data-original-height="${editor.originalHeight}"/>
+            </sly>
+            <sly data-sly-test="${!editor.isAsset}">
+                <iframe src="${editor.contentUrl}?wcmmode=disabled"
+                        class="annotation-content-iframe"
+                        sandbox="allow-same-origin"></iframe>
+            </sly>
+        </div>
+
+        <!-- SVG Annotation Layer -->
+        <svg class="annotation-layer" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- Marker definitions for arrows -->
+                <marker id="arrowhead" markerWidth="10" markerHeight="7"
+                        refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="currentColor"/>
+                </marker>
+                <!-- Pattern for highlight -->
+                <pattern id="highlight-pattern" patternUnits="userSpaceOnUse" width="4" height="4">
+                    <rect width="4" height="4" fill="currentColor" opacity="0.3"/>
+                </pattern>
+            </defs>
+
+            <!-- Existing annotations will be rendered here -->
+            <g class="annotations-group">
+                <sly data-sly-list.annotation="${editor.annotations}">
+                    <!-- Pin annotations -->
+                    <sly data-sly-test="${annotation.type == 'pin'}">
+                        <g class="annotation pin" data-id="${annotation.id}" transform="translate(${annotation.x}, ${annotation.y})">
+                            <circle r="12" fill="${annotation.color}" class="pin-marker"/>
+                            <text y="5" text-anchor="middle" fill="white" font-size="10" font-weight="bold">${annotation.index}</text>
+                        </g>
+                    </sly>
+
+                    <!-- Rectangle annotations -->
+                    <sly data-sly-test="${annotation.type == 'rectangle'}">
+                        <g class="annotation rectangle" data-id="${annotation.id}">
+                            <rect x="${annotation.x}" y="${annotation.y}"
+                                  width="${annotation.width}" height="${annotation.height}"
+                                  stroke="${annotation.color}" stroke-width="2" fill="none"/>
+                            <text x="${annotation.x}" y="${annotation.y - 5}"
+                                  fill="${annotation.color}" font-size="12" font-weight="bold">#${annotation.index}</text>
+                        </g>
+                    </sly>
+
+                    <!-- Highlight annotations -->
+                    <sly data-sly-test="${annotation.type == 'highlight'}">
+                        <g class="annotation highlight" data-id="${annotation.id}">
+                            <rect x="${annotation.x}" y="${annotation.y}"
+                                  width="${annotation.width}" height="${annotation.height}"
+                                  fill="${annotation.color}" opacity="0.3"/>
+                        </g>
+                    </sly>
+
+                    <!-- Arrow annotations -->
+                    <sly data-sly-test="${annotation.type == 'arrow'}">
+                        <g class="annotation arrow" data-id="${annotation.id}">
+                            <line x1="${annotation.x1}" y1="${annotation.y1}"
+                                  x2="${annotation.x2}" y2="${annotation.y2}"
+                                  stroke="${annotation.color}" stroke-width="2"
+                                  marker-end="url(#arrowhead)"/>
+                        </g>
+                    </sly>
+
+                    <!-- Freeform draw annotations -->
+                    <sly data-sly-test="${annotation.type == 'draw'}">
+                        <g class="annotation draw" data-id="${annotation.id}">
+                            <path d="${annotation.path}"
+                                  stroke="${annotation.color}" stroke-width="2"
+                                  fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        </g>
+                    </sly>
+                </sly>
+            </g>
+
+            <!-- Drawing layer for new annotations -->
+            <g class="drawing-layer"></g>
+        </svg>
+
+        <!-- Annotation Comment Popover (shown when clicking annotation) -->
+        <div class="annotation-popover" style="display: none;">
+            <div class="popover-header">
+                <span class="annotation-number">#1</span>
+                <button class="popover-close" data-action="close-popover">
+                    <coral-icon icon="close" size="XS"></coral-icon>
+                </button>
+            </div>
+            <div class="popover-content">
+                <textarea class="annotation-comment" placeholder="Add your comment..."></textarea>
+            </div>
+            <div class="popover-footer">
+                <span class="annotation-author"></span>
+                <div class="popover-actions">
+                    <button class="coral-Button coral-Button--secondary coral-Button--quiet" data-action="delete-annotation">
+                        <coral-icon icon="delete" size="XS"></coral-icon>
+                    </button>
+                    <button class="coral-Button coral-Button--primary" data-action="save-annotation">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Annotations List Panel -->
+    <div class="annotations-list-panel">
+        <div class="panel-header">
+            <h4>Annotations (${editor.annotationCount})</h4>
+            <button class="coral-Button coral-Button--secondary coral-Button--quiet" data-action="toggle-panel">
+                <coral-icon icon="chevronDown" size="S"></coral-icon>
+            </button>
+        </div>
+
+        <div class="panel-content">
+            <sly data-sly-test="${editor.hasAnnotations}">
+                <ul class="annotations-list">
+                    <sly data-sly-list.annotation="${editor.annotations}">
+                        <li class="annotation-item ${annotation.resolved ? 'resolved' : ''}"
+                            data-annotation-id="${annotation.id}">
+                            <div class="annotation-icon" style="color: ${annotation.color}">
+                                <sly data-sly-test="${annotation.type == 'pin'}">
+                                    <coral-icon icon="pinOff" size="S"></coral-icon>
+                                </sly>
+                                <sly data-sly-test="${annotation.type == 'rectangle'}">
+                                    <coral-icon icon="rectangle" size="S"></coral-icon>
+                                </sly>
+                                <sly data-sly-test="${annotation.type == 'highlight'}">
+                                    <coral-icon icon="highlight" size="S"></coral-icon>
+                                </sly>
+                                <sly data-sly-test="${annotation.type == 'draw'}">
+                                    <coral-icon icon="draw" size="S"></coral-icon>
+                                </sly>
+                                <sly data-sly-test="${annotation.type == 'arrow'}">
+                                    <coral-icon icon="arrowRight" size="S"></coral-icon>
+                                </sly>
+                            </div>
+                            <div class="annotation-content">
+                                <div class="annotation-text">
+                                    <span class="annotation-index">#${annotation.index}:</span>
+                                    "${annotation.comment}"
+                                </div>
+                                <div class="annotation-meta">
+                                    ${annotation.author} • ${annotation.date}
+                                </div>
+                            </div>
+                            <div class="annotation-actions">
+                                <button class="coral-Button coral-Button--minimal" data-action="goto" title="Go to annotation">
+                                    <coral-icon icon="visibility" size="XS"></coral-icon>
+                                </button>
+                                <button class="coral-Button coral-Button--minimal" data-action="edit" title="Edit">
+                                    <coral-icon icon="edit" size="XS"></coral-icon>
+                                </button>
+                                <sly data-sly-test="${!annotation.resolved}">
+                                    <button class="coral-Button coral-Button--minimal" data-action="resolve" title="Mark Resolved">
+                                        <coral-icon icon="checkCircle" size="XS"></coral-icon>
+                                    </button>
+                                </sly>
+                                <button class="coral-Button coral-Button--minimal" data-action="delete" title="Delete">
+                                    <coral-icon icon="delete" size="XS"></coral-icon>
+                                </button>
+                            </div>
+                        </li>
+                    </sly>
+                </ul>
+            </sly>
+
+            <sly data-sly-test="${!editor.hasAnnotations}">
+                <div class="empty-state">
+                    <coral-icon icon="annotate" size="L"></coral-icon>
+                    <p>No annotations yet. Click on the content to add annotations.</p>
+                </div>
+            </sly>
+        </div>
+    </div>
+</div>

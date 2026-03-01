@@ -1,0 +1,208 @@
+<!--/*
+    Comment Thread Component
+
+    Displays all comments from the workflow review process in a threaded format.
+    Supports replies, mentions, and rich text formatting.
+
+    ┌─────────────────────────────────────────────────────────────────┐
+    │                    COMMENT THREAD                               │
+    ├─────────────────────────────────────────────────────────────────┤
+    │  ┌───────────────────────────────────────────────────────────┐ │
+    │  │ 🔍 Filter: [All ▼] [Newest First ▼]        [+ Add Comment]│ │
+    │  └───────────────────────────────────────────────────────────┘ │
+    │                                                                 │
+    │  ┌───────────────────────────────────────────────────────────┐ │
+    │  │ 👤 John Smith (Team Lead)           Jan 15, 2024 10:30 AM │ │
+    │  │ ─────────────────────────────────────────────────────────  │ │
+    │  │ The hero image needs to be replaced with the updated      │ │
+    │  │ brand assets. Please use the ones from /content/dam/brand │ │
+    │  │                                                           │ │
+    │  │ 📎 Attached: brand-guidelines.pdf                         │ │
+    │  │ [Reply] [Edit] [Mark Resolved]                            │ │
+    │  │                                                           │ │
+    │  │   ┌─────────────────────────────────────────────────────┐ │ │
+    │  │   │ 👤 Jane Doe (Author)         Jan 15, 2024 11:45 AM │ │ │
+    │  │   │ ───────────────────────────────────────────────────  │ │ │
+    │  │   │ @John Smith Updated the hero image as requested.    │ │ │
+    │  │   │ Please review the changes.                          │ │ │
+    │  │   │ [Reply]                                             │ │ │
+    │  │   └─────────────────────────────────────────────────────┘ │ │
+    │  └───────────────────────────────────────────────────────────┘ │
+    │                                                                 │
+    │  ┌───────────────────────────────────────────────────────────┐ │
+    │  │ 👤 Mike Johnson (Manager)           Jan 16, 2024 9:00 AM │ │
+    │  │ ─────────────────────────────────────────────────────────  │ │
+    │  │ ✓ RESOLVED: Hero image updated correctly.                 │ │
+    │  │ [Reopen]                                                  │ │
+    │  └───────────────────────────────────────────────────────────┘ │
+    │                                                                 │
+    └─────────────────────────────────────────────────────────────────┘
+*/-->
+<sly data-sly-use.comments="${'com.demo.workflow.models.CommentThreadModel'}"/>
+
+<div class="workflow-comment-thread" data-workflow-id="${comments.workflowId}">
+
+    <!-- Thread Header with Filters -->
+    <div class="thread-header">
+        <div class="thread-filters">
+            <coral-select name="commentFilter" class="comment-filter">
+                <coral-select-item value="all" selected>All Comments (${comments.totalCount})</coral-select-item>
+                <coral-select-item value="unresolved">Unresolved (${comments.unresolvedCount})</coral-select-item>
+                <coral-select-item value="resolved">Resolved (${comments.resolvedCount})</coral-select-item>
+                <coral-select-item value="mentions">Mentions Me (${comments.mentionsCount})</coral-select-item>
+            </coral-select>
+
+            <coral-select name="commentSort" class="comment-sort">
+                <coral-select-item value="newest" selected>Newest First</coral-select-item>
+                <coral-select-item value="oldest">Oldest First</coral-select-item>
+                <coral-select-item value="unresolved">Unresolved First</coral-select-item>
+            </coral-select>
+        </div>
+
+        <button class="coral-Button coral-Button--primary" data-action="add-comment">
+            <coral-icon icon="add" size="S"></coral-icon>
+            Add Comment
+        </button>
+    </div>
+
+    <!-- New Comment Form (Initially Hidden) -->
+    <div class="new-comment-form" style="display: none;">
+        <div class="comment-editor">
+            <div class="rich-text-toolbar">
+                <button type="button" data-command="bold" title="Bold">
+                    <coral-icon icon="textBold" size="S"></coral-icon>
+                </button>
+                <button type="button" data-command="italic" title="Italic">
+                    <coral-icon icon="textItalic" size="S"></coral-icon>
+                </button>
+                <button type="button" data-command="list" title="Bullet List">
+                    <coral-icon icon="textBulleted" size="S"></coral-icon>
+                </button>
+                <button type="button" data-command="link" title="Insert Link">
+                    <coral-icon icon="link" size="S"></coral-icon>
+                </button>
+                <button type="button" data-command="mention" title="Mention User (@)">
+                    <coral-icon icon="userAdd" size="S"></coral-icon>
+                </button>
+            </div>
+            <div class="comment-textarea" contenteditable="true"
+                 placeholder="Add your comment... Use @ to mention users"></div>
+        </div>
+        <div class="comment-attachments">
+            <input type="file" id="commentAttachment" multiple style="display:none"/>
+            <button class="coral-Button coral-Button--secondary" data-action="attach-file">
+                <coral-icon icon="attach" size="S"></coral-icon>
+                Attach File
+            </button>
+            <div class="attachment-list"></div>
+        </div>
+        <div class="comment-actions">
+            <button class="coral-Button coral-Button--secondary" data-action="cancel-comment">Cancel</button>
+            <button class="coral-Button coral-Button--primary" data-action="submit-comment">
+                <coral-icon icon="send" size="S"></coral-icon>
+                Post Comment
+            </button>
+        </div>
+    </div>
+
+    <!-- Comment List -->
+    <div class="comment-list">
+        <sly data-sly-list.comment="${comments.items}">
+            <div class="comment-item ${comment.resolved ? 'resolved' : ''}"
+                 data-comment-id="${comment.id}"
+                 data-parent-id="${comment.parentId}">
+
+                <!-- Comment Header -->
+                <div class="comment-header">
+                    <div class="comment-author">
+                        <img src="${comment.authorAvatar}" alt="${comment.authorName}" class="author-avatar"/>
+                        <div class="author-info">
+                            <span class="author-name">${comment.authorName}</span>
+                            <span class="author-role">(${comment.authorRole})</span>
+                        </div>
+                    </div>
+                    <div class="comment-meta">
+                        <span class="comment-date">${comment.formattedDate}</span>
+                        <sly data-sly-test="${comment.edited}">
+                            <span class="comment-edited">(edited)</span>
+                        </sly>
+                    </div>
+                </div>
+
+                <!-- Comment Body -->
+                <div class="comment-body">
+                    <sly data-sly-test="${comment.resolved}">
+                        <coral-icon icon="checkCircle" size="S" class="resolved-icon"></coral-icon>
+                        <span class="resolved-label">RESOLVED:</span>
+                    </sly>
+                    <div class="comment-text">${comment.content @ context='html'}</div>
+
+                    <!-- Attachments -->
+                    <sly data-sly-test="${comment.hasAttachments}">
+                        <div class="comment-attachments-list">
+                            <sly data-sly-list.attachment="${comment.attachments}">
+                                <a href="${attachment.url}" target="_blank" class="attachment-link">
+                                    <coral-icon icon="attach" size="XS"></coral-icon>
+                                    ${attachment.name}
+                                </a>
+                            </sly>
+                        </div>
+                    </sly>
+                </div>
+
+                <!-- Comment Actions -->
+                <div class="comment-actions">
+                    <button class="coral-Button coral-Button--minimal" data-action="reply">
+                        <coral-icon icon="reply" size="S"></coral-icon>
+                        Reply
+                    </button>
+                    <sly data-sly-test="${comment.canEdit}">
+                        <button class="coral-Button coral-Button--minimal" data-action="edit">
+                            <coral-icon icon="edit" size="S"></coral-icon>
+                            Edit
+                        </button>
+                    </sly>
+                    <sly data-sly-test="${!comment.resolved && comment.canResolve}">
+                        <button class="coral-Button coral-Button--minimal" data-action="resolve">
+                            <coral-icon icon="checkCircle" size="S"></coral-icon>
+                            Mark Resolved
+                        </button>
+                    </sly>
+                    <sly data-sly-test="${comment.resolved && comment.canResolve}">
+                        <button class="coral-Button coral-Button--minimal" data-action="reopen">
+                            <coral-icon icon="undo" size="S"></coral-icon>
+                            Reopen
+                        </button>
+                    </sly>
+                </div>
+
+                <!-- Nested Replies -->
+                <sly data-sly-test="${comment.hasReplies}">
+                    <div class="comment-replies">
+                        <sly data-sly-list.reply="${comment.replies}">
+                            <sly data-sly-resource="${reply.path @ resourceType='demo-workflow/components/workflow-review/comment-item'}"/>
+                        </sly>
+                    </div>
+                </sly>
+            </div>
+        </sly>
+
+        <!-- Empty State -->
+        <sly data-sly-test="${comments.isEmpty}">
+            <div class="empty-state">
+                <coral-icon icon="comment" size="L"></coral-icon>
+                <h3>No Comments Yet</h3>
+                <p>Be the first to add a comment or feedback for this content.</p>
+            </div>
+        </sly>
+    </div>
+
+    <!-- Load More -->
+    <sly data-sly-test="${comments.hasMore}">
+        <div class="load-more">
+            <button class="coral-Button coral-Button--secondary" data-action="load-more">
+                Load More Comments
+            </button>
+        </div>
+    </sly>
+</div>
