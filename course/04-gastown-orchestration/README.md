@@ -68,12 +68,13 @@ The Mayor AI coordinates all specialized agents:
 | **AEM Reviewer** | Code Review, Security, Best Practices | Read, Grep, Analysis |
 | **AEM Docs** | JavaDoc, Markdown, README | Write, Read |
 | **AEM DevOps** | CI/CD, Cloud Manager, Docker | Bash, Config files |
+| **AEM Spec Writer** | TDD Specification Tests | Write, Read (for TDAD) |
 
 ---
 
 ## Workflow Definitions
 
-### Workflow: Implement Feature
+### Workflow: Implement Feature (Traditional)
 
 ```yaml
 workflow: implement-feature
@@ -146,6 +147,197 @@ steps:
       - bead.task.status = completed
       - bead.task.artifacts = source_files + test_files
       - notify.stakeholders
+```
+
+### Workflow: TDD Implementation (TDAD)
+
+This workflow follows Test-Driven Agentic Development - tests are written FIRST, then AI implements to pass them:
+
+```yaml
+workflow: implement-feature-tdd
+trigger: bead.task.methodology == "TDAD"
+agents:
+  - aem-spec-writer-agent   # Writes specification tests
+  - aem-coder-agent         # Implements to pass tests
+  - aem-reviewer-agent      # Reviews implementation
+
+steps:
+  # ═══════════════════════════════════════════════════════════════════
+  # PHASE 1: RED - Write Failing Tests First
+  # ═══════════════════════════════════════════════════════════════════
+
+  - name: write-specification-tests
+    agent: aem-spec-writer-agent
+    input:
+      - bead.task.description
+      - bead.task.acceptance_criteria
+      - context.user_story
+    output:
+      - spec_test_file.java
+    bead_update:
+      tdd.phase: RED
+      tdd.spec_file: spec_test_file.java
+
+  - name: verify-tests-fail
+    agent: aem-tester-agent
+    depends_on: write-specification-tests
+    command: "mvn test -Dtest=*Spec"
+    gate:
+      # Tests MUST fail initially (RED phase)
+      condition: "test_results.failures > 0"
+      on_fail: "error: Tests should fail in RED phase"
+    output:
+      - initial_test_count
+    bead_update:
+      tdd.test_status.total: initial_test_count
+      tdd.test_status.passing: 0
+
+  # ═══════════════════════════════════════════════════════════════════
+  # PHASE 2: GREEN - Implement to Pass Tests
+  # ═══════════════════════════════════════════════════════════════════
+
+  - name: implement-to-pass-tests
+    agent: aem-coder-agent
+    depends_on: verify-tests-fail
+    input:
+      - spec_test_file.java        # Tests define requirements
+      - context.existing_patterns   # Follow project patterns
+    instructions: |
+      Read the specification tests carefully.
+      Implement MINIMUM code to make each test pass.
+      Do NOT modify the test file.
+      Run tests after each significant change.
+    output:
+      - implementation_file.java
+    bead_update:
+      tdd.phase: GREEN
+      status: in_progress
+
+  - name: run-tests-iteratively
+    agent: aem-tester-agent
+    depends_on: implement-to-pass-tests
+    command: "mvn test -Dtest=*Spec"
+    loop:
+      max_iterations: 10
+      until: "test_results.failures == 0"
+      on_fail: "return to implement-to-pass-tests"
+    output:
+      - test_results.xml
+    bead_update:
+      tdd.test_status.passing: test_results.passed
+      tdd.iterations: loop.count
+
+  - name: verify-all-green
+    agent: mayor
+    depends_on: run-tests-iteratively
+    gate:
+      condition: "test_results.failures == 0"
+      on_fail: "escalate: Unable to pass all tests"
+    bead_update:
+      tdd.phase: GREEN_COMPLETE
+
+  # ═══════════════════════════════════════════════════════════════════
+  # PHASE 3: REFACTOR - Improve Code Quality
+  # ═══════════════════════════════════════════════════════════════════
+
+  - name: refactor-implementation
+    agent: aem-coder-agent
+    depends_on: verify-all-green
+    input:
+      - implementation_file.java
+      - spec_test_file.java
+    instructions: |
+      All tests are passing. Now improve code quality:
+      - Extract helper methods
+      - Add logging
+      - Improve variable names
+      - Add JavaDoc
+      CONSTRAINT: All tests must still pass after refactoring.
+    output:
+      - refactored_file.java
+    bead_update:
+      tdd.phase: REFACTOR
+
+  - name: verify-tests-still-pass
+    agent: aem-tester-agent
+    depends_on: refactor-implementation
+    command: "mvn test -Dtest=*Spec"
+    gate:
+      condition: "test_results.failures == 0"
+      on_fail: "return to refactor-implementation with: Refactoring broke tests"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # COMPLETION
+  # ═══════════════════════════════════════════════════════════════════
+
+  - name: code-review
+    agent: aem-reviewer-agent
+    depends_on: verify-tests-still-pass
+    input:
+      - refactored_file.java
+      - spec_test_file.java
+    output:
+      - review_findings.md
+
+  - name: complete-tdd-task
+    agent: mayor
+    depends_on: code-review
+    action:
+      - bead.task.status = completed
+      - bead.task.tdd.phase = DONE
+      - bead.task.artifacts = [spec_test_file, refactored_file]
+      - notify.stakeholders
+```
+
+### TDD vs Traditional Workflow Comparison
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    WORKFLOW COMPARISON                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   TRADITIONAL                          TDD (TDAD)                           │
+│   ──────────────                       ──────────────                       │
+│                                                                             │
+│   ┌─────────────┐                      ┌─────────────┐                     │
+│   │ Analyze     │                      │ Write Tests │ ◀── Tests First!    │
+│   │ Requirements│                      │ (Spec)      │                     │
+│   └──────┬──────┘                      └──────┬──────┘                     │
+│          │                                    │                             │
+│          ▼                                    ▼                             │
+│   ┌─────────────┐                      ┌─────────────┐                     │
+│   │ Implement   │                      │ Verify RED  │ ◀── Tests fail      │
+│   │ Code        │                      │ (All fail)  │                     │
+│   └──────┬──────┘                      └──────┬──────┘                     │
+│          │                                    │                             │
+│          ▼                                    ▼                             │
+│   ┌─────────────┐                      ┌─────────────┐                     │
+│   │ Generate    │ ◀── Tests After      │ Implement   │ ◀── To pass tests   │
+│   │ Tests       │                      │ Code        │                     │
+│   └──────┬──────┘                      └──────┬──────┘                     │
+│          │                                    │                             │
+│          ▼                                    ▼                             │
+│   ┌─────────────┐                      ┌─────────────┐                     │
+│   │ Run Tests   │                      │ Verify GREEN│ ◀── All pass        │
+│   │             │                      │             │                     │
+│   └──────┬──────┘                      └──────┬──────┘                     │
+│          │                                    │                             │
+│          ▼                                    ▼                             │
+│   ┌─────────────┐                      ┌─────────────┐                     │
+│   │ Review      │                      │ Refactor    │ ◀── Improve quality │
+│   │             │                      │             │                     │
+│   └─────────────┘                      └──────┬──────┘                     │
+│                                               │                             │
+│                                               ▼                             │
+│                                        ┌─────────────┐                     │
+│                                        │ Review      │                     │
+│                                        │             │                     │
+│                                        └─────────────┘                     │
+│                                                                             │
+│   Advantage: Faster initial          Advantage: Better quality,            │
+│   development                         tests as documentation               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Workflow: Build and Deploy
@@ -306,7 +498,7 @@ Implement three workflow processes in parallel:
 - QuarantineProcess
 - AssetApprovalParticipantChooser
 
-### Execution
+### Execution (Traditional)
 
 ```bash
 # Create parallel tasks in BEAD
@@ -330,6 +522,50 @@ gastown watch
 # [10:15:00] AEM-Coder-1: Completed SAW-021
 # [10:15:01] AEM-Tester-1: Starting tests for SAW-021
 # [10:18:00] AEM-Coder-2: Completed SAW-022
+# ...
+```
+
+### Execution (TDD Mode)
+
+```bash
+# Create TDD tasks with specification tests
+bd create task "Implement AntivirusScanProcess" \
+  --id SAW-021 \
+  --methodology TDAD \
+  --spec-test "core/src/test/java/.../AntivirusScanProcessSpec.java"
+
+bd create task "Implement QuarantineProcess" \
+  --id SAW-022 \
+  --methodology TDAD \
+  --spec-test "core/src/test/java/.../QuarantineProcessSpec.java"
+
+bd create task "Implement DynamicApproverAssigner" \
+  --id SAW-023 \
+  --methodology TDAD \
+  --spec-test "core/src/test/java/.../DynamicApproverAssignerSpec.java"
+
+# Run parallel TDD workflow
+gastown run implement-feature-tdd \
+  --tasks SAW-021,SAW-022,SAW-023 \
+  --parallel
+
+# Watch TDD progress
+gastown watch --show-tdd-phase
+
+# Expected output:
+# [10:00:01] Mayor: Starting parallel TDD implementation for 3 tasks
+# [10:00:02] AEM-Spec-1: Writing tests for SAW-021 (AntivirusScanProcess)
+# [10:00:02] AEM-Spec-2: Writing tests for SAW-022 (QuarantineProcess)
+# [10:00:02] AEM-Spec-3: Writing tests for SAW-023 (DynamicApproverAssigner)
+# [10:05:00] SAW-021: Phase RED - 6 tests written, 0 passing
+# [10:05:01] SAW-022: Phase RED - 7 tests written, 0 passing
+# [10:05:02] SAW-023: Phase RED - 5 tests written, 0 passing
+# [10:05:03] AEM-Coder-1: Implementing SAW-021 to pass tests
+# [10:10:00] SAW-021: Phase GREEN - 3/6 passing
+# [10:15:00] SAW-021: Phase GREEN - 6/6 passing ✓
+# [10:15:01] AEM-Coder-1: Refactoring SAW-021
+# [10:18:00] SAW-021: Phase REFACTOR complete, all tests pass ✓
+# [10:20:00] SAW-022: Phase GREEN - 7/7 passing ✓
 # ...
 ```
 
@@ -438,10 +674,62 @@ review_summary:
 
 ---
 
+---
+
+## TDD Agent Configuration
+
+Add the spec writer agent to `gastown.yaml`:
+
+```yaml
+agents:
+  # ... existing agents ...
+
+  aem-spec-writer:
+    model: claude-3-opus
+    specialization: tdd-specification-tests
+    tools:
+      - read
+      - write
+    context:
+      - "core/src/test/java/**/*Spec.java"
+      - "course/10-tdd-integration/*.md"
+    instructions: |
+      You write JUnit 5 specification tests that define expected behavior.
+      Tests are written BEFORE implementation exists.
+      Use @DisplayName for clear test descriptions.
+      Use @Nested for logical grouping.
+      Follow Given-When-Then pattern in test methods.
+      Tests should be comprehensive but focused.
+    max_tokens: 50000
+
+workflows:
+  - name: implement-feature
+    file: workflows/implement-feature.yaml
+  - name: implement-feature-tdd       # NEW: TDD workflow
+    file: workflows/implement-feature-tdd.yaml
+  - name: build-deploy
+    file: workflows/build-deploy.yaml
+```
+
+---
+
+## Benefits of TDD in GasTown
+
+| Benefit | Description |
+|---------|-------------|
+| **Deterministic Validation** | Tests provide clear pass/fail criteria for AI |
+| **Parallel Safety** | Multiple agents can implement independently with test isolation |
+| **Progress Tracking** | Test counts show exact progress (3/7 passing) |
+| **Quality Gates** | GREEN phase must complete before REFACTOR |
+| **Reduced Review Burden** | Tests validate before human review |
+
+---
+
 ## Next Steps
 
 1. Create `gastown.yaml` configuration
 2. Define agent prompts in `agents/` directory
 3. Create workflow definitions in `workflows/` directory
-4. Run the implementation workflow
-5. Move to hands-on labs for practice
+4. **NEW**: Add TDD workflow for test-driven tasks
+5. Run the implementation workflow
+6. Move to hands-on labs for practice

@@ -112,6 +112,135 @@ notes:
 
 ---
 
+## TDD-Enhanced BEAD Tasks (TDAD)
+
+When using Test-Driven Agentic Development, BEAD tasks include test specifications that guide AI implementation:
+
+```yaml
+id: "c3d4e5f6"
+type: "task"
+title: "Implement AntivirusScanProcess"
+methodology: "TDAD"  # Test-Driven Agentic Development
+status: "pending"
+priority: "high"
+assignee: "aem-coder-agent"
+
+# ═══════════════════════════════════════════════════════════════════
+# TDD SPECIFICATION SECTION
+# ═══════════════════════════════════════════════════════════════════
+
+tdd:
+  specification_test:
+    file: "core/src/test/java/com/demo/workflow/process/AntivirusScanProcessSpec.java"
+    test_count: 6
+    test_sections:
+      - name: "AssetProcessing"
+        tests: ["shouldScanAssetBinary", "shouldStoreScanResultInMetadata"]
+      - name: "MalwareDetection"
+        tests: ["shouldMarkAsInfected", "shouldRouteToQuarantine"]
+      - name: "ServiceUnavailable"
+        tests: ["shouldFailWithClearError", "shouldSetErrorStatus"]
+
+  test_status:
+    total: 6
+    passing: 0
+    failing: 6
+    last_run: null
+
+  workflow:
+    phase: "RED"  # RED, GREEN, REFACTOR
+    iterations: 0
+
+# ═══════════════════════════════════════════════════════════════════
+# IMPLEMENTATION TARGET
+# ═══════════════════════════════════════════════════════════════════
+
+implementation:
+  file: "core/src/main/java/com/demo/workflow/process/AntivirusScanProcess.java"
+  interface: "com.adobe.granite.workflow.exec.WorkflowProcess"
+  osgi_component: true
+
+# ═══════════════════════════════════════════════════════════════════
+# AI INSTRUCTIONS
+# ═══════════════════════════════════════════════════════════════════
+
+ai_instructions: |
+  This task uses Test-Driven Development. Follow this workflow:
+
+  1. RED PHASE: Read all specification tests
+     - Understand what each test expects
+     - Do NOT modify test files
+
+  2. GREEN PHASE: Implement minimum code to pass tests
+     - Run: mvn test -Dtest=AntivirusScanProcessSpec
+     - Implement one test section at a time
+     - Report progress after each section
+
+  3. REFACTOR PHASE: Improve code quality
+     - All tests must continue to pass
+     - Extract helpers, add logging, improve names
+
+acceptance_criteria:
+  - command: "mvn test -Dtest=AntivirusScanProcessSpec"
+    expected: "Tests run: 6, Failures: 0, Errors: 0"
+  - All tests passing (GREEN)
+  - Code review approved
+  - No new warnings
+
+# Standard BEAD fields continue...
+progress:
+  started_at: null
+  tdd_iterations:
+    - phase: "RED"
+      timestamp: null
+      tests_passing: 0
+    - phase: "GREEN"
+      timestamp: null
+      tests_passing: 6
+    - phase: "REFACTOR"
+      timestamp: null
+      tests_passing: 6
+```
+
+### TDD Task Lifecycle
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    BEAD TASK WITH TDD LIFECYCLE                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   Status: pending              Status: in_progress         Status: complete │
+│   Phase: -                     Phase: RED→GREEN→REFACTOR   Phase: DONE      │
+│                                                                             │
+│   ┌──────────────┐            ┌──────────────────────┐    ┌──────────────┐ │
+│   │ Task Created │───────────▶│ Tests Written First  │───▶│ All Tests    │ │
+│   │              │            │ (Spec file exists)   │    │ Passing      │ │
+│   └──────────────┘            └──────────────────────┘    └──────────────┘ │
+│                                         │                                   │
+│                                         ▼                                   │
+│                               ┌──────────────────────┐                     │
+│                               │   RED: 0/6 passing   │                     │
+│                               │   AI reads specs     │                     │
+│                               └──────────┬───────────┘                     │
+│                                          │                                  │
+│                                          ▼                                  │
+│                               ┌──────────────────────┐                     │
+│                               │  GREEN: Implement    │                     │
+│                               │  Run tests after     │                     │
+│                               │  each change         │                     │
+│                               └──────────┬───────────┘                     │
+│                                          │                                  │
+│                                          ▼                                  │
+│                               ┌──────────────────────┐                     │
+│                               │ REFACTOR: Improve    │                     │
+│                               │ Tests still pass     │                     │
+│                               └──────────────────────┘                     │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Using BEAD in This Course
 
 ### Lab 5.1: Creating BEAD Tasks
@@ -206,9 +335,96 @@ See the `.issues/` directory for complete task definitions:
 
 ---
 
+---
+
+## BEAD Commands for TDD Tasks
+
+### Creating a TDD Task
+
+```bash
+# Create task with TDD methodology
+bd create task "Implement QuarantineProcess" \
+  --methodology TDAD \
+  --spec-test "core/src/test/java/.../QuarantineProcessSpec.java" \
+  --test-count 7 \
+  --parent SAW-020
+
+# Initialize test status
+bd tdd init SAW-022 --tests 7 --phase RED
+```
+
+### Updating TDD Progress
+
+```bash
+# Update test status after running tests
+bd tdd update SAW-022 --passing 3 --failing 4
+
+# Move to next phase
+bd tdd phase SAW-022 --phase GREEN
+
+# Record iteration
+bd tdd iterate SAW-022 --note "AssetProcessing tests now passing"
+```
+
+### TDD Status Commands
+
+```bash
+# View TDD status for a task
+bd tdd status SAW-022
+
+# Output:
+# Task: SAW-022 - Implement QuarantineProcess
+# Methodology: TDAD
+# Phase: GREEN
+# Tests: 5/7 passing
+# Iterations: 3
+# Last Run: 2024-02-28T14:30:00Z
+
+# List all TDD tasks
+bd list --methodology TDAD
+
+# Show tasks in RED phase (need implementation)
+bd list --tdd-phase RED
+```
+
+---
+
+## Integration with CI/CD
+
+BEAD TDD tasks integrate with CI/CD pipelines:
+
+```yaml
+# .github/workflows/tdd-validation.yml
+name: BEAD TDD Validation
+
+on: [push, pull_request]
+
+jobs:
+  validate-tdd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Specification Tests
+        run: mvn test -Dtest="*Spec"
+
+      - name: Update BEAD Task Status
+        run: |
+          # Parse test results and update BEAD
+          bd tdd sync --from-surefire target/surefire-reports/
+
+      - name: Fail if TDD Tasks Incomplete
+        run: |
+          # Ensure all TDD tasks are GREEN
+          bd tdd verify --fail-on-red
+```
+
+---
+
 ## Next Steps
 
 1. Review the task files in `.issues/`
 2. Complete Lab 5.1 to create your own tasks
 3. Practice updating task status
-4. Move to GasTown for multi-agent orchestration
+4. **NEW**: Create TDD tasks with specification tests
+5. Move to GasTown for multi-agent orchestration
