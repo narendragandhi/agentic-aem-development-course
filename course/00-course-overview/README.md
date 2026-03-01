@@ -165,6 +165,15 @@ By the end of this course, participants will be able to:
 - **Lab 8.1**: Set up monitoring dashboards
 - **Lab 8.2**: Security review with AI agents
 
+### Module 9: Test-Driven Agentic Development (3 hours)
+- TDD fundamentals for AI agent workflows
+- Writing specification tests that guide AI
+- Red-Green-Refactor cycle with AI agents
+- TDAD: Hybrid BMAD + TDD methodology
+- **Lab 9.1**: Write specification tests first
+- **Lab 9.2**: Create BEAD task with test references
+- **Lab 9.3**: AI-driven implementation cycle
+
 ---
 
 ## Course Materials
@@ -235,11 +244,11 @@ Upon successful completion, participants receive:
 
 | Component | Duration |
 |-----------|----------|
-| Video Lectures | 8 hours |
-| Hands-On Labs | 12 hours |
+| Video Lectures | 10 hours |
+| Hands-On Labs | 14 hours |
 | Self-Study | 4 hours |
 | Assessment | 2 hours |
-| **Total** | **26 hours** |
+| **Total** | **30 hours** |
 
 Recommended pace: 1 week intensive or 4 weeks part-time
 
