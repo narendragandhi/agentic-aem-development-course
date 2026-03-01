@@ -474,11 +474,150 @@
 
 ---
 
-## Scoring Guide
+---
 
-| Score | Grade | Result |
-|-------|-------|--------|
-| 36-40 | A | Excellent - Certified |
-| 32-35 | B | Good - Certified |
-| 28-31 | C | Pass - Review recommended |
-| <28 | F | Retake required |
+## Section 5: Scenario-Based Questions (10 Questions)
+
+### S1. You receive this requirement: "The system should handle large files efficiently." How should you rewrite this for AI agents?
+
+**Best Answer:**
+"Files up to 500MB must complete processing within 5 minutes. Files exceeding maxFileSize (configurable, default 100MB) should return an ERROR result within 1 second without attempting to scan."
+
+*Explanation: AI agents need specific, measurable criteria. The rewritten version provides exact thresholds and expected behaviors.*
+
+---
+
+### S2. An AI agent reports: "I've implemented the service but I'm not sure about the ClamAV protocol." What BEAD field should contain this information?
+
+- A) session_log with a note about uncertainty
+- B) status set to "blocked"
+- C) dependencies with the protocol spec
+- D) Both A and B
+
+**Answer: D**
+*Explanation: Log the uncertainty in session_log AND set status to "blocked" to signal that human clarification is needed.*
+
+---
+
+### S3. You have 5 independent tasks to implement. How would you configure GasTown for optimal execution?
+
+**Best Answer:**
+```yaml
+parallel_execution:
+  workflow: implement-feature
+  items: [SAW-021, SAW-022, SAW-023, SAW-024, SAW-025]
+  max_parallel: 4  # Leave one thread for Mayor coordination
+```
+
+*Explanation: Run 4 agents in parallel (leaving overhead for orchestration), reducing time from 5x to ~1.5x single task duration.*
+
+---
+
+### S4. Your workflow throws this error: "Cannot invoke WorkflowData.getPayload() because return value is null". What's the likely cause?
+
+- A) ClamAV is not running
+- B) The mock chain in tests is incomplete
+- C) The asset doesn't exist
+- D) OSGi configuration is missing
+
+**Answer: B**
+*Explanation: This is a common test setup issue. The mock for workItem.getWorkflowData() wasn't configured, returning null.*
+
+---
+
+### S5. A reviewer agent finds this code: `socket = new Socket(); socket.connect(...); // do work; socket.close();`. What's the issue?
+
+**Best Answer:**
+Resource leak - if an exception occurs between connect and close, the socket won't be closed. Should use try-with-resources: `try (Socket socket = new Socket()) { ... }`
+
+*Explanation: This is a classic resource leak pattern that AI reviewers should catch.*
+
+---
+
+### S6. You're implementing a QuarantineProcess. Which BMAD phase deliverable should you reference for the quarantine path structure?
+
+- A) Phase 01 - PRD user stories
+- B) Phase 02 - Content models
+- C) Phase 03 - Architecture specification
+- D) Phase 05 - Test cases
+
+**Answer: C**
+*Explanation: The architecture specification (Phase 03) defines technical details like folder structures and path conventions.*
+
+---
+
+### S7. An AI agent completed a task, but the BEAD file shows:
+```yaml
+acceptance_criteria:
+  - criteria: "Inject service"
+    status: met
+  - criteria: "Handle timeout"
+    status: pending
+```
+What should happen?
+
+- A) Mark task as completed anyway
+- B) Return task to in_progress status
+- C) Delete the pending criterion
+- D) Create a new task for the pending item
+
+**Answer: B**
+*Explanation: All acceptance criteria must be met. The task should return to in_progress for completion.*
+
+---
+
+### S8. Your workflow model has:
+```xml
+<node jcr:primaryType="cq:WorkflowNode" type="OR_SPLIT">
+  <metaData>
+    <route1 condition="${av.scanStatus == 'CLEAN'}"/>
+    <route2 condition="${av.scanStatus == 'INFECTED'}"/>
+  </metaData>
+</node>
+```
+What happens if av.scanStatus is "ERROR"?
+
+- A) Takes route1
+- B) Takes route2
+- C) Throws exception
+- D) Neither route - workflow may hang or error
+
+**Answer: D**
+*Explanation: OR_SPLIT requires at least one matching condition. An unhandled "ERROR" state could cause issues. Add a default/else route.*
+
+---
+
+### S9. You want the aem-tester agent to generate tests with 80% coverage. How do you configure this in GasTown?
+
+**Best Answer:**
+```yaml
+quality_gates:
+  tests_pass:
+    conditions:
+      - "unit_tests_pass"
+      - "coverage >= 80%"
+    actions:
+      - trigger: "aem-reviewer"
+```
+
+*Explanation: Quality gates enforce conditions like coverage thresholds before proceeding to the next phase.*
+
+---
+
+### S10. A developer asks: "Should I use MOCK or CLAMAV mode during development?" What's the recommended answer?
+
+**Best Answer:**
+Use MOCK mode for rapid development and testing (files starting with "virus_" are treated as infected). Use CLAMAV mode when testing actual antivirus integration. Configure via OSGi: set scanEngine=MOCK for config.author, scanEngine=CLAMAV for config.stage and config.prod.
+
+*Explanation: Environment-specific configuration allows testing both the workflow logic (MOCK) and real integration (CLAMAV).*
+
+---
+
+## Scoring Guide (Updated)
+
+| Score (50 total) | Grade | Result |
+|------------------|-------|--------|
+| 45-50 | A | Excellent - Certified Expert |
+| 40-44 | B | Good - Certified |
+| 35-39 | C | Pass - Certified with Review |
+| <35 | F | Retake required |
