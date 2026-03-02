@@ -174,6 +174,41 @@ By the end of this course, participants will be able to:
 - **Lab 9.2**: Create BEAD task with test references
 - **Lab 9.3**: AI-driven implementation cycle
 
+### Module 10: Advanced Security Scanning (4 hours)
+- Basic security pattern detection (XSS, SQL injection)
+- Document security (PDF JavaScript, Office macros)
+- Comprehensive OWASP Top 10 coverage
+- **Lab 10.1**: Implement basic security scanner
+- **Lab 10.2**: Build document security scanner (PDF/Office)
+- **Lab 10.3**: Implement OWASP pattern database
+
+### Module 11: Multi-Agent Orchestration (3 hours)
+- Building the agent orchestrator
+- Workflow definition and execution
+- Context sharing between agents
+- Checkpoints and recovery
+- **Lab 11.1**: Implement agent interface pattern
+- **Lab 11.2**: Build workflow execution engine
+- **Lab 11.3**: Create specialized AEM agents
+
+### Module 12: Integration Testing (3 hours)
+- AEM Mock framework
+- Testing with real AEM context
+- Service integration testing
+- Workflow process testing
+- **Lab 12.1**: Configure AEM Mock
+- **Lab 12.2**: Create DAM asset tests
+- **Lab 12.3**: Test service dependencies
+
+### Module 13: Code Quality & Hygiene (3 hours)
+- Static code analysis (Checkstyle, PMD, SpotBugs)
+- Code coverage with JaCoCo
+- Javadoc generation and validation
+- Quality gates and CI/CD integration
+- **Lab 13.1**: Configure linting tools
+- **Lab 13.2**: Implement coverage requirements
+- **Lab 13.3**: Set up quality pipeline
+
 ---
 
 ## Course Materials
@@ -209,7 +244,14 @@ course/
 │   ├── lab-05-bead-tracking/
 │   ├── lab-06-gastown-orchestration/
 │   ├── lab-07-testing/
-│   └── lab-08-deployment/
+│   ├── lab-08-deployment/
+│   ├── lab-09-tdd-integration/
+│   ├── lab-10-security-scanner/
+│   ├── lab-11-document-security/
+│   ├── lab-12-owasp-patterns/
+│   ├── lab-13-agent-orchestrator/
+│   ├── lab-14-integration-testing/
+│   └── lab-15-code-quality/
 ├── 06-instructor-guide/       # Teaching Materials
 │   ├── facilitation-guide.md
 │   ├── assessment-rubrics.md
@@ -244,13 +286,13 @@ Upon successful completion, participants receive:
 
 | Component | Duration |
 |-----------|----------|
-| Video Lectures | 10 hours |
-| Hands-On Labs | 14 hours |
-| Self-Study | 4 hours |
+| Video Lectures | 16 hours |
+| Hands-On Labs | 26 hours |
+| Self-Study | 6 hours |
 | Assessment | 2 hours |
-| **Total** | **30 hours** |
+| **Total** | **50 hours** |
 
-Recommended pace: 1 week intensive or 4 weeks part-time
+Recommended pace: 2 weeks intensive or 6 weeks part-time
 
 ---
 
