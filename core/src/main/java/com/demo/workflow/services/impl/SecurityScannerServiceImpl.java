@@ -3,6 +3,9 @@ package com.demo.workflow.services.impl;
 import com.day.cq.dam.api.Asset;
 import com.demo.workflow.services.SecurityScannerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +35,9 @@ import java.util.stream.Collectors;
 public class SecurityScannerServiceImpl implements SecurityScannerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityScannerServiceImpl.class);
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    private volatile DocumentSecurityScanner documentScanner;
 
     // ═══════════════════════════════════════════════════════════════════
     // XSS Detection Patterns
@@ -117,6 +123,18 @@ public class SecurityScannerServiceImpl implements SecurityScannerService {
             // Scan for embedded scripts
             try (InputStream content = asset.getOriginal().getStream()) {
                 allFindings.addAll(scanForEmbeddedScripts(content, mimeType));
+            }
+
+            // Advanced document scanning (PDF, Office documents)
+            DocumentSecurityScanner docScanner = this.documentScanner;
+            if (docScanner != null && docScanner.isScannableDocument(mimeType)) {
+                try (InputStream content = asset.getOriginal().getStream()) {
+                    if (mimeType.equals("application/pdf")) {
+                        allFindings.addAll(docScanner.scanPdf(content));
+                    } else {
+                        allFindings.addAll(docScanner.scanOfficeDocument(content, mimeType));
+                    }
+                }
             }
 
         } catch (Exception e) {

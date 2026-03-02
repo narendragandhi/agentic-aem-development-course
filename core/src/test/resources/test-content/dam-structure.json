@@ -1,0 +1,23 @@
+{
+  "jcr:primaryType": "sling:Folder",
+  "test": {
+    "jcr:primaryType": "sling:Folder",
+    "clean-image.png": {
+      "jcr:primaryType": "dam:Asset",
+      "jcr:content": {
+        "jcr:primaryType": "dam:AssetContent",
+        "metadata": {
+          "jcr:primaryType": "nt:unstructured",
+          "dc:title": "Clean Image",
+          "dc:description": "A safe test image"
+        }
+      }
+    }
+  },
+  "uploads": {
+    "jcr:primaryType": "sling:Folder"
+  },
+  "quarantine": {
+    "jcr:primaryType": "sling:Folder"
+  }
+}
