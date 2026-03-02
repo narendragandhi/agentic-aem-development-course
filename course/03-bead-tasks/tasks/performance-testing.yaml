@@ -1,0 +1,169 @@
+# BEAD Task: Performance Testing Service
+# TDD-Enhanced Implementation Task
+
+task_id: PERF-001
+title: "Implement PerformanceTestingService"
+status: completed
+priority: high
+
+# TDD Section
+tdd:
+  spec_file: "core/src/test/java/com/demo/workflow/services/impl/PerformanceTestingServiceSpec.java"
+  test_count: 15
+  phase: green
+  coverage_target: 85%
+
+  test_suites:
+    - name: TimingMeasurement
+      tests: 4
+      status: passing
+      description: "Execution time, min/max/avg, exceptions, named operations"
+
+    - name: ResourceMonitoring
+      tests: 4
+      status: passing
+      description: "Memory usage, thread count, usage percent, timestamp"
+
+    - name: SLAVerification
+      tests: 4
+      status: passing
+      description: "Pass/warn/fail thresholds, metric aggregation"
+
+    - name: BaselineComparison
+      tests: 3
+      status: passing
+      description: "Improvement, degradation, no baseline handling"
+
+# Build Section
+build:
+  interface_file: "core/src/main/java/com/demo/workflow/services/PerformanceTestingService.java"
+  implementation_file: "core/src/main/java/com/demo/workflow/services/impl/PerformanceTestingServiceImpl.java"
+
+  components:
+    - name: PerformanceTestingService
+      type: interface
+      methods:
+        - "runTest(PerformanceTestConfig): PerformanceResult"
+        - "measureExecution(Runnable, String): TimingResult"
+        - "getResourceSnapshot(): ResourceSnapshot"
+        - "compareToBaseline(PerformanceResult, PerformanceResult): ComparisonResult"
+        - "checkSLA(PerformanceResult, SLADefinition): SLACheckResult"
+
+    - name: PerformanceTestingServiceImpl
+      type: osgi_component
+      annotations:
+        - "@Component(service = PerformanceTestingService.class, immediate = true)"
+
+  inner_classes:
+    - PerformanceTestConfig
+    - PerformanceResult
+    - TimingResult
+    - ResourceSnapshot
+    - SLADefinition
+    - SLACheckResult
+    - ComparisonResult
+    - PerformanceStatus (enum)
+    - MetricStatus (enum)
+    - ComparisonOutcome (enum)
+
+  metrics:
+    timing:
+      - executionTimeMs
+      - minTimeMs
+      - maxTimeMs
+      - avgTimeMs
+    resources:
+      - usedMemoryMb
+      - maxMemoryMb
+      - threadCount
+      - cpuUsagePercent
+    sla:
+      - targetResponseTimeMs
+      - warningResponseTimeMs
+      - criticalResponseTimeMs
+
+# Execute Section
+execute:
+  commands:
+    red_phase:
+      - "mvn test -pl core -Dtest=PerformanceTestingServiceSpec"
+      - description: "Expected: 15 failures (no implementation)"
+
+    green_phase:
+      - "mvn test -pl core -Dtest=PerformanceTestingServiceSpec"
+      - description: "Expected: 15 passing"
+
+    all_tests:
+      - "mvn test -pl core"
+      - description: "Expected: 96 total tests passing"
+
+  verification:
+    - test_count: 96
+    - coverage_threshold: 85%
+    - no_new_bugs: true
+
+# Analyze Section
+analyze:
+  performance_status:
+    - name: HEALTHY
+      description: "All metrics within target"
+      color: "Green"
+
+    - name: WARNING
+      description: "Some metrics above warning threshold"
+      color: "Yellow"
+
+    - name: DEGRADED
+      description: "Significant performance degradation"
+      color: "Orange"
+
+    - name: CRITICAL
+      description: "Severe performance issues"
+      color: "Red"
+
+  sla_thresholds:
+    response_time:
+      target: "< 200ms"
+      warning: "> 500ms"
+      critical: "> 1000ms"
+    throughput:
+      target: "> 100/sec"
+      warning: "< 50/sec"
+      critical: "< 20/sec"
+    memory:
+      target: "< 512MB"
+      warning: "> 1GB"
+      critical: "> 2GB"
+
+# Document Section
+document:
+  prd: "course/01-prd/performance-testing-prd.md"
+  interface_doc: |
+    ## PerformanceTestingService
+
+    Provides performance analysis for AEM workflow implementations.
+
+    ### Key Methods
+    - `runTest()` - Execute complete performance test
+    - `measureExecution()` - Measure single operation timing
+    - `getResourceSnapshot()` - Capture current resource usage
+    - `compareToBaseline()` - Compare against baseline metrics
+    - `checkSLA()` - Verify against SLA thresholds
+
+    ### Performance Status
+    - HEALTHY: All metrics within target
+    - WARNING: Some metrics above warning
+    - DEGRADED: Significant degradation
+    - CRITICAL: Severe issues
+
+  references:
+    - "JMeter: https://jmeter.apache.org/"
+    - "AEM Performance: https://experienceleague.adobe.com/"
+
+# Metadata
+metadata:
+  created: "2026-03-02"
+  created_by: "AI Agent"
+  methodology: "TDD (Test-Driven Development)"
+  phase: "Phase 04 - Implementation"
+  ci_integration: true

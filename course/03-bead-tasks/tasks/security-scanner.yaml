@@ -1,0 +1,160 @@
+# BEAD Task: Security Scanner Service
+# TDD-Enhanced Implementation Task
+
+task_id: SECURITY-001
+title: "Implement SecurityScannerService"
+status: completed
+priority: high
+
+# TDD Section
+tdd:
+  spec_file: "core/src/test/java/com/demo/workflow/services/impl/SecurityScannerServiceSpec.java"
+  test_count: 15
+  phase: green
+  coverage_target: 85%
+
+  test_suites:
+    - name: XssDetection
+      tests: 4
+      status: passing
+      description: "Script tags, javascript: protocol, event handlers, clean metadata"
+
+    - name: SqlInjectionDetection
+      tests: 3
+      status: passing
+      description: "OR 1=1, UNION SELECT, DROP TABLE patterns"
+
+    - name: FileTypeValidationTests
+      tests: 4
+      status: passing
+      description: "Magic bytes validation, double extension, null byte injection"
+
+    - name: EmbeddedScriptDetection
+      tests: 4
+      status: passing
+      description: "SVG scripts, HTML scripts, safe images, onload handlers"
+
+# Build Section
+build:
+  interface_file: "core/src/main/java/com/demo/workflow/services/SecurityScannerService.java"
+  implementation_file: "core/src/main/java/com/demo/workflow/services/impl/SecurityScannerServiceImpl.java"
+
+  components:
+    - name: SecurityScannerService
+      type: interface
+      methods:
+        - "scanAsset(Asset): SecurityScanResult"
+        - "scanMetadata(Map<String, Object>): List<SecurityFinding>"
+        - "validateFileType(InputStream, String, String): FileTypeValidation"
+        - "scanForEmbeddedScripts(InputStream, String): List<SecurityFinding>"
+
+    - name: SecurityScannerServiceImpl
+      type: osgi_component
+      annotations:
+        - "@Component(service = SecurityScannerService.class, immediate = true)"
+
+  inner_classes:
+    - SecurityScanResult
+    - SecurityFinding
+    - FileTypeValidation
+    - Severity (enum)
+
+  patterns_detected:
+    xss:
+      - "<script[^>]*>"
+      - "javascript:"
+      - "on\\w+\\s*="
+      - "vbscript:"
+    sql_injection:
+      - "'\\s*OR\\s+\\d+\\s*=\\s*\\d+"
+      - "UNION\\s+SELECT"
+      - "DROP\\s+TABLE"
+    file_validation:
+      - PNG: "89 50 4E 47 0D 0A 1A 0A"
+      - JPEG: "FF D8 FF"
+      - GIF: "47 49 46 38"
+      - PDF: "25 50 44 46"
+
+# Execute Section
+execute:
+  commands:
+    red_phase:
+      - "mvn test -pl core -Dtest=SecurityScannerServiceSpec"
+      - description: "Expected: 15 failures (no implementation)"
+
+    green_phase:
+      - "mvn test -pl core -Dtest=SecurityScannerServiceSpec"
+      - description: "Expected: 15 passing"
+
+    all_tests:
+      - "mvn test -pl core"
+      - description: "Expected: 66 total tests passing"
+
+    build:
+      - "mvn clean install -pl core"
+
+  verification:
+    - test_count: 66
+    - coverage_threshold: 85%
+    - no_new_bugs: true
+
+# Analyze Section
+analyze:
+  security_categories:
+    - name: XSS
+      severity: CRITICAL
+      owasp: "A7:2017"
+      cwe: "CWE-79"
+
+    - name: SQL_INJECTION
+      severity: CRITICAL
+      owasp: "A1:2017"
+      cwe: "CWE-89"
+
+    - name: FILE_TYPE_MISMATCH
+      severity: HIGH
+      owasp: "A8:2017"
+      cwe: "CWE-434"
+
+    - name: EMBEDDED_SCRIPT
+      severity: HIGH
+      owasp: "A7:2017"
+      cwe: "CWE-79"
+
+  performance:
+    metadata_scan: "< 100ms"
+    file_validation: "< 500ms"
+    script_detection: "< 2s for 50MB"
+
+# Document Section
+document:
+  prd: "course/01-prd/security-scanner-prd.md"
+  interface_doc: |
+    ## SecurityScannerService
+
+    Provides content security analysis for AEM DAM assets.
+
+    ### Key Methods
+    - `scanAsset()` - Full security scan on DAM asset
+    - `scanMetadata()` - Check metadata for injection attacks
+    - `validateFileType()` - Verify file header matches extension
+    - `scanForEmbeddedScripts()` - Detect scripts in SVG/HTML
+
+    ### Severity Levels
+    - CRITICAL: Block + Quarantine (XSS, SQL injection)
+    - HIGH: Block + Review (embedded scripts, file mismatch)
+    - MEDIUM: Flag for review
+    - LOW: Log only
+    - INFO: Informational
+
+  references:
+    - "OWASP Top 10: https://owasp.org/Top10/"
+    - "CWE Database: https://cwe.mitre.org/"
+
+# Metadata
+metadata:
+  created: "2026-03-02"
+  created_by: "AI Agent"
+  methodology: "TDD (Test-Driven Development)"
+  phase: "Phase 04 - Implementation"
+  workflow_integration: "Secure Asset Approval Workflow"

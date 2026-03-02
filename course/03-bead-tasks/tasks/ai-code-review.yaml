@@ -1,0 +1,165 @@
+# BEAD Task: AI Code Review Service
+# TDD-Enhanced Implementation Task
+
+task_id: CODEREVIEW-001
+title: "Implement AICodeReviewService"
+status: completed
+priority: high
+
+# TDD Section
+tdd:
+  spec_file: "core/src/test/java/com/demo/workflow/services/impl/AICodeReviewServiceSpec.java"
+  test_count: 15
+  phase: green
+  coverage_target: 85%
+
+  test_suites:
+    - name: AemPatternDetection
+      tests: 4
+      status: passing
+      description: "Missing @Reference, ResourceResolver leaks, hardcoded paths, clean code"
+
+    - name: WorkflowAnalysis
+      tests: 4
+      status: passing
+      description: "Exception handling, sync HTTP, metadata updates, proper workflow"
+
+    - name: SecurityChecks
+      tests: 3
+      status: passing
+      description: "Hardcoded credentials, input validation, service user resolution"
+
+    - name: QualityScoring
+      tests: 4
+      status: passing
+      description: "Perfect score, deductions, grade calculation, empty files"
+
+# Build Section
+build:
+  interface_file: "core/src/main/java/com/demo/workflow/services/AICodeReviewService.java"
+  implementation_file: "core/src/main/java/com/demo/workflow/services/impl/AICodeReviewServiceImpl.java"
+
+  components:
+    - name: AICodeReviewService
+      type: interface
+      methods:
+        - "reviewFile(String, String): CodeReviewResult"
+        - "reviewBatch(List<FileContent>): BatchReviewResult"
+        - "getAvailableRules(): List<ReviewRule>"
+        - "calculateScore(BatchReviewResult): QualityScore"
+
+    - name: AICodeReviewServiceImpl
+      type: osgi_component
+      annotations:
+        - "@Component(service = AICodeReviewService.class, immediate = true)"
+
+  inner_classes:
+    - FileContent
+    - CodeReviewResult
+    - BatchReviewResult
+    - ReviewFinding
+    - ReviewRule
+    - QualityScore
+    - ReviewSeverity (enum)
+    - ReviewCategory (enum)
+    - Grade (enum)
+
+  rules_implemented:
+    aem_antipattern:
+      - AEM001: "Missing @Reference annotation"
+      - AEM002: "Hardcoded content path"
+    resource_leak:
+      - LEAK001: "ResourceResolver not closed"
+    workflow:
+      - WF001: "Missing exception handling"
+      - WF002: "Synchronous HTTP call"
+      - WF003: "Missing metadata update"
+    security:
+      - SEC001: "Hardcoded credentials"
+      - SEC002: "Missing input validation"
+      - SEC003: "Service user resolution"
+
+# Execute Section
+execute:
+  commands:
+    red_phase:
+      - "mvn test -pl core -Dtest=AICodeReviewServiceSpec"
+      - description: "Expected: 15 failures (no implementation)"
+
+    green_phase:
+      - "mvn test -pl core -Dtest=AICodeReviewServiceSpec"
+      - description: "Expected: 15 passing"
+
+    all_tests:
+      - "mvn test -pl core"
+      - description: "Expected: 81 total tests passing"
+
+  verification:
+    - test_count: 81
+    - coverage_threshold: 85%
+    - no_new_bugs: true
+
+# Analyze Section
+analyze:
+  review_categories:
+    - name: AEM_ANTIPATTERN
+      severity_range: "MEDIUM - HIGH"
+      description: "AEM-specific bad practices"
+
+    - name: RESOURCE_LEAK
+      severity_range: "HIGH - CRITICAL"
+      description: "Unclosed resources"
+
+    - name: WORKFLOW
+      severity_range: "LOW - MEDIUM"
+      description: "Workflow process issues"
+
+    - name: SECURITY
+      severity_range: "HIGH - CRITICAL"
+      description: "Security vulnerabilities"
+
+    - name: PERFORMANCE
+      severity_range: "MEDIUM - HIGH"
+      description: "Performance concerns"
+
+  quality_scoring:
+    formula: "100 - (CRITICAL × 20) - (HIGH × 10) - (MEDIUM × 5) - (LOW × 1)"
+    grades:
+      A: "90-100 (Pass)"
+      B: "80-89 (Pass)"
+      C: "70-79 (Warning)"
+      D: "60-69 (Warning)"
+      F: "< 60 (Fail)"
+
+# Document Section
+document:
+  prd: "course/01-prd/ai-code-review-prd.md"
+  interface_doc: |
+    ## AICodeReviewService
+
+    Provides automated code quality analysis for AEM development.
+
+    ### Key Methods
+    - `reviewFile()` - Analyze single file for issues
+    - `reviewBatch()` - Batch analysis of multiple files
+    - `getAvailableRules()` - List configured review rules
+    - `calculateScore()` - Calculate quality score from results
+
+    ### Quality Grades
+    - A: Excellent (90-100)
+    - B: Good (80-89)
+    - C: Acceptable (70-79)
+    - D: Poor (60-69)
+    - F: Failing (< 60)
+
+  references:
+    - "AEM Best Practices: https://experienceleague.adobe.com/docs/"
+    - "OWASP Top 10: https://owasp.org/Top10/"
+
+# Metadata
+metadata:
+  created: "2026-03-02"
+  created_by: "AI Agent"
+  methodology: "TDD (Test-Driven Development)"
+  phase: "Phase 04 - Implementation"
+  ci_integration: true

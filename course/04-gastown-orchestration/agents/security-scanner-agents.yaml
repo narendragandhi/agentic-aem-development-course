@@ -1,0 +1,204 @@
+# GasTown Agent Configuration: Security Scanner
+# Multi-agent orchestration for security scanner implementation
+
+orchestration:
+  name: implement-security-scanner
+  description: "Orchestrate AI agents to implement SecurityScannerService using TDD"
+
+agents:
+  # ═══════════════════════════════════════════════════════════════════
+  # MAYOR AI - Orchestration Coordinator
+  # ═══════════════════════════════════════════════════════════════════
+  mayor:
+    role: "orchestrator"
+    description: "Coordinates security scanner implementation using TDD workflow"
+
+    workflow:
+      - step: 1
+        agent: "aem-spec-writer"
+        action: "Create specification tests for SecurityScannerService"
+        output: "SecurityScannerServiceSpec.java"
+
+      - step: 2
+        agent: "aem-architect"
+        action: "Design interface with inner classes (SecurityFinding, Severity, etc.)"
+        output: "SecurityScannerService.java"
+
+      - step: 3
+        agent: "test-runner"
+        action: "Run RED phase - verify all tests fail"
+        expected: "15 failures"
+
+      - step: 4
+        agent: "aem-developer"
+        action: "Implement service to pass all tests"
+        output: "SecurityScannerServiceImpl.java"
+
+      - step: 5
+        agent: "test-runner"
+        action: "Run GREEN phase - verify all tests pass"
+        expected: "15 passing"
+
+      - step: 6
+        agent: "code-reviewer"
+        action: "Review for security patterns and best practices"
+        checks:
+          - "Pattern detection completeness"
+          - "Magic bytes validation"
+          - "OWASP references"
+
+      - step: 7
+        agent: "documentation-writer"
+        action: "Generate BEAD task file"
+        output: "security-scanner.yaml"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # SPECIALIZED AGENTS
+  # ═══════════════════════════════════════════════════════════════════
+
+  aem-spec-writer:
+    role: "tdd-specialist"
+    description: "Creates specification tests before implementation"
+
+    capabilities:
+      - "Write JUnit 5 tests with @Nested classes"
+      - "Define behavior using @DisplayName"
+      - "Create test categories (XSS, SQL, File, Scripts)"
+      - "Follow red-green-refactor methodology"
+
+    templates:
+      test_class: |
+        @ExtendWith(MockitoExtension.class)
+        @DisplayName("{Service} Specification")
+        class {Service}Spec {
+            // Test categories as @Nested classes
+        }
+
+      test_method: |
+        @Test
+        @DisplayName("should {behavior}")
+        void should{Behavior}() {
+            // Given
+            // When
+            // Then
+        }
+
+    output_format:
+      file: "{service}Spec.java"
+      location: "core/src/test/java/.../impl/"
+
+  aem-architect:
+    role: "interface-designer"
+    description: "Designs service interfaces with inner classes"
+
+    capabilities:
+      - "Create OSGi service interfaces"
+      - "Define inner classes for results/findings"
+      - "Create severity enums with business rules"
+      - "Document with OWASP/CWE references"
+
+    patterns:
+      security_finding: |
+        class SecurityFinding {
+            String id;
+            Severity severity;
+            String category;
+            String description;
+            String owaspReference;
+            String cweReference;
+        }
+
+      severity_enum: |
+        enum Severity {
+            CRITICAL,  // Block + Quarantine
+            HIGH,      // Block + Review
+            MEDIUM,    // Flag for review
+            LOW,       // Log only
+            INFO       // Informational
+        }
+
+  aem-developer:
+    role: "implementation-specialist"
+    description: "Implements services to pass specification tests"
+
+    capabilities:
+      - "Implement OSGi components"
+      - "Create regex pattern detection"
+      - "Implement magic byte validation"
+      - "Handle edge cases from tests"
+
+    implementation_patterns:
+      xss_detection: |
+        private static final List<Pattern> XSS_PATTERNS = Arrays.asList(
+            Pattern.compile("<script[^>]*>", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("javascript:", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("on\\\\w+\\\\s*=", Pattern.CASE_INSENSITIVE)
+        );
+
+      magic_bytes: |
+        MAGIC_BYTES.put("image/png", new byte[]{
+            (byte)0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A
+        });
+
+  test-runner:
+    role: "test-executor"
+    description: "Executes tests and validates phases"
+
+    commands:
+      red_phase: "mvn test -pl core -Dtest=SecurityScannerServiceSpec"
+      green_phase: "mvn test -pl core -Dtest=SecurityScannerServiceSpec"
+      all_tests: "mvn test -pl core"
+
+    validation:
+      red:
+        expected_failures: 15
+        error_message: "Tests should fail before implementation"
+      green:
+        expected_passing: 15
+        error_message: "All tests must pass after implementation"
+
+  code-reviewer:
+    role: "quality-assurance"
+    description: "Reviews security implementation for completeness"
+
+    checklist:
+      patterns:
+        - "XSS patterns (script, javascript:, event handlers)"
+        - "SQL injection (OR 1=1, UNION SELECT, DROP TABLE)"
+        - "Command injection (if applicable)"
+
+      file_validation:
+        - "Magic bytes for common formats (PNG, JPEG, PDF, GIF)"
+        - "Double extension detection (.pdf.exe)"
+        - "Null byte injection (%00)"
+
+      embedded_scripts:
+        - "SVG script detection"
+        - "HTML script detection"
+        - "Event handler detection in XML"
+
+      documentation:
+        - "OWASP references present"
+        - "CWE references present"
+        - "Severity mapping correct"
+
+# ═══════════════════════════════════════════════════════════════════
+# WORKFLOW EXECUTION
+# ═══════════════════════════════════════════════════════════════════
+
+execution:
+  parallel_agents: false
+  checkpoint_after_each_step: true
+  rollback_on_failure: true
+
+  success_criteria:
+    - "All 15 specification tests pass"
+    - "No regressions in existing 51 tests"
+    - "Total test count: 66"
+    - "BEAD task file generated"
+
+  outputs:
+    - "SecurityScannerService.java"
+    - "SecurityScannerServiceImpl.java"
+    - "SecurityScannerServiceSpec.java"
+    - "security-scanner.yaml"

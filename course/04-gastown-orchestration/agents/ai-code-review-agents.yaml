@@ -1,0 +1,187 @@
+# GasTown Agent Configuration: AI Code Review
+# Multi-agent orchestration for code review implementation
+
+orchestration:
+  name: implement-ai-code-review
+  description: "Orchestrate AI agents to implement AICodeReviewService using TDD"
+
+agents:
+  # ═══════════════════════════════════════════════════════════════════
+  # MAYOR AI - Orchestration Coordinator
+  # ═══════════════════════════════════════════════════════════════════
+  mayor:
+    role: "orchestrator"
+    description: "Coordinates code review service implementation using TDD workflow"
+
+    workflow:
+      - step: 1
+        agent: "aem-spec-writer"
+        action: "Create specification tests for AICodeReviewService"
+        output: "AICodeReviewServiceSpec.java"
+
+      - step: 2
+        agent: "aem-architect"
+        action: "Design interface with inner classes and enums"
+        output: "AICodeReviewService.java"
+
+      - step: 3
+        agent: "test-runner"
+        action: "Run RED phase - verify all tests fail"
+        expected: "15 failures"
+
+      - step: 4
+        agent: "aem-developer"
+        action: "Implement service with pattern matching"
+        output: "AICodeReviewServiceImpl.java"
+
+      - step: 5
+        agent: "test-runner"
+        action: "Run GREEN phase - verify all tests pass"
+        expected: "15 passing"
+
+      - step: 6
+        agent: "code-reviewer"
+        action: "Self-review using the implemented service"
+        meta: "Dogfooding - service reviews its own code"
+
+      - step: 7
+        agent: "documentation-writer"
+        action: "Generate BEAD task file"
+        output: "ai-code-review.yaml"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # SPECIALIZED AGENTS
+  # ═══════════════════════════════════════════════════════════════════
+
+  aem-spec-writer:
+    role: "tdd-specialist"
+    description: "Creates specification tests before implementation"
+
+    capabilities:
+      - "Write JUnit 5 tests with @Nested classes"
+      - "Define behavior using @DisplayName"
+      - "Create test categories (AEM, Workflow, Security, Scoring)"
+      - "Follow red-green-refactor methodology"
+
+    test_structure:
+      sections:
+        - "AemPatternDetection (4 tests)"
+        - "WorkflowAnalysis (4 tests)"
+        - "SecurityChecks (3 tests)"
+        - "QualityScoring (4 tests)"
+
+  aem-architect:
+    role: "interface-designer"
+    description: "Designs service interfaces with comprehensive type system"
+
+    capabilities:
+      - "Create OSGi service interfaces"
+      - "Define inner classes for results/findings"
+      - "Create enums for categories and grades"
+      - "Design quality scoring algorithm"
+
+    design_patterns:
+      quality_score: |
+        Score = 100 - (CRITICAL × 20) - (HIGH × 10) - (MEDIUM × 5) - (LOW × 1)
+
+      grade_mapping: |
+        A: 90-100 (Passing)
+        B: 80-89 (Passing)
+        C: 70-79 (Warning)
+        D: 60-69 (Warning)
+        F: < 60 (Failing)
+
+  aem-developer:
+    role: "implementation-specialist"
+    description: "Implements services with regex pattern matching"
+
+    capabilities:
+      - "Implement OSGi components"
+      - "Create regex-based code analysis"
+      - "Implement scoring algorithm"
+      - "Handle edge cases from tests"
+
+    review_rules:
+      aem:
+        - id: "AEM001"
+          name: "Missing @Reference"
+          pattern: "private\\s+ResourceResolverFactory without @Reference"
+
+        - id: "AEM002"
+          name: "Hardcoded Path"
+          pattern: "/content/ literal in source"
+
+      security:
+        - id: "SEC001"
+          name: "Hardcoded Credentials"
+          pattern: "PASSWORD|API_KEY = \"...\""
+
+        - id: "SEC002"
+          name: "Missing Input Validation"
+          pattern: "@FormParam without validation"
+
+  test-runner:
+    role: "test-executor"
+    description: "Executes tests and validates phases"
+
+    commands:
+      red_phase: "mvn test -pl core -Dtest=AICodeReviewServiceSpec"
+      green_phase: "mvn test -pl core -Dtest=AICodeReviewServiceSpec"
+      all_tests: "mvn test -pl core"
+
+    validation:
+      red:
+        expected_failures: 15
+      green:
+        expected_passing: 15
+
+  code-reviewer:
+    role: "quality-assurance"
+    description: "Reviews implementation using the service itself (dogfooding)"
+
+    dogfooding:
+      enabled: true
+      description: "AICodeReviewService reviews its own implementation"
+      expected_score: "> 90 (Grade A)"
+
+# ═══════════════════════════════════════════════════════════════════
+# CI/CD INTEGRATION
+# ═══════════════════════════════════════════════════════════════════
+
+ci_integration:
+  quality_gate:
+    minimum_score: 80
+    minimum_grade: "B"
+    block_on_critical: true
+
+  pipeline_step: |
+    - name: Code Review
+      run: |
+        AICodeReviewService service = new AICodeReviewServiceImpl();
+        BatchReviewResult results = service.reviewBatch(changedFiles);
+        QualityScore score = service.calculateScore(results);
+        if (!score.isPassing()) {
+          throw new QualityGateException("Code review failed: " + score.getGrade());
+        }
+
+# ═══════════════════════════════════════════════════════════════════
+# WORKFLOW EXECUTION
+# ═══════════════════════════════════════════════════════════════════
+
+execution:
+  parallel_agents: false
+  checkpoint_after_each_step: true
+  rollback_on_failure: true
+
+  success_criteria:
+    - "All 15 specification tests pass"
+    - "No regressions in existing 66 tests"
+    - "Total test count: 81"
+    - "Self-review score > 90"
+    - "BEAD task file generated"
+
+  outputs:
+    - "AICodeReviewService.java"
+    - "AICodeReviewServiceImpl.java"
+    - "AICodeReviewServiceSpec.java"
+    - "ai-code-review.yaml"

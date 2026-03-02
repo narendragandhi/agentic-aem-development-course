@@ -1,0 +1,157 @@
+# GasTown Agent Configuration: Performance Testing
+# Multi-agent orchestration for performance testing implementation
+
+orchestration:
+  name: implement-performance-testing
+  description: "Orchestrate AI agents to implement PerformanceTestingService using TDD"
+
+agents:
+  # ═══════════════════════════════════════════════════════════════════
+  # MAYOR AI - Orchestration Coordinator
+  # ═══════════════════════════════════════════════════════════════════
+  mayor:
+    role: "orchestrator"
+    description: "Coordinates performance testing service implementation using TDD workflow"
+
+    workflow:
+      - step: 1
+        agent: "aem-spec-writer"
+        action: "Create specification tests for PerformanceTestingService"
+        output: "PerformanceTestingServiceSpec.java"
+
+      - step: 2
+        agent: "aem-architect"
+        action: "Design interface with metrics classes and enums"
+        output: "PerformanceTestingService.java"
+
+      - step: 3
+        agent: "test-runner"
+        action: "Run RED phase - verify all tests fail"
+        expected: "15 failures"
+
+      - step: 4
+        agent: "aem-developer"
+        action: "Implement service with JVM metrics and SLA checks"
+        output: "PerformanceTestingServiceImpl.java"
+
+      - step: 5
+        agent: "test-runner"
+        action: "Run GREEN phase - verify all tests pass"
+        expected: "15 passing"
+
+      - step: 6
+        agent: "performance-validator"
+        action: "Validate measurement accuracy"
+        checks:
+          - "Timing precision ±1ms"
+          - "Memory precision ±1MB"
+
+      - step: 7
+        agent: "documentation-writer"
+        action: "Generate BEAD task file"
+        output: "performance-testing.yaml"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # SPECIALIZED AGENTS
+  # ═══════════════════════════════════════════════════════════════════
+
+  aem-spec-writer:
+    role: "tdd-specialist"
+    description: "Creates specification tests before implementation"
+
+    test_structure:
+      sections:
+        - "TimingMeasurement (4 tests)"
+        - "ResourceMonitoring (4 tests)"
+        - "SLAVerification (4 tests)"
+        - "BaselineComparison (3 tests)"
+
+  aem-architect:
+    role: "interface-designer"
+    description: "Designs performance metrics type system"
+
+    capabilities:
+      - "Design timing result classes"
+      - "Create resource snapshot structures"
+      - "Define SLA threshold types"
+      - "Create status enums"
+
+    design_patterns:
+      timing_metrics: |
+        class TimingResult {
+            long executionTimeMs;
+            long minTimeMs;
+            long maxTimeMs;
+            long avgTimeMs;
+            int sampleCount;
+        }
+
+      resource_snapshot: |
+        class ResourceSnapshot {
+            long usedMemoryMb;
+            long maxMemoryMb;
+            int threadCount;
+            double cpuUsagePercent;
+        }
+
+  aem-developer:
+    role: "implementation-specialist"
+    description: "Implements service with JVM metrics collection"
+
+    capabilities:
+      - "Use ManagementFactory for JVM metrics"
+      - "Implement timing measurement"
+      - "Calculate statistical aggregations"
+      - "SLA threshold checking"
+
+    jvm_apis_used:
+      - "Runtime.getRuntime() - memory metrics"
+      - "ManagementFactory.getThreadMXBean() - thread count"
+      - "System.currentTimeMillis() - timing"
+
+  test-runner:
+    role: "test-executor"
+    description: "Executes tests and validates phases"
+
+    commands:
+      red_phase: "mvn test -pl core -Dtest=PerformanceTestingServiceSpec"
+      green_phase: "mvn test -pl core -Dtest=PerformanceTestingServiceSpec"
+      all_tests: "mvn test -pl core"
+
+  performance-validator:
+    role: "accuracy-checker"
+    description: "Validates measurement accuracy"
+
+    checks:
+      timing:
+        precision: "±1ms"
+        test: "50ms sleep should measure 50-60ms"
+
+      memory:
+        precision: "±1MB"
+        test: "Snapshot captures current heap usage"
+
+      consistency:
+        test: "Multiple runs produce consistent results"
+
+# ═══════════════════════════════════════════════════════════════════
+# WORKFLOW EXECUTION
+# ═══════════════════════════════════════════════════════════════════
+
+execution:
+  parallel_agents: false
+  checkpoint_after_each_step: true
+  rollback_on_failure: true
+
+  success_criteria:
+    - "All 15 specification tests pass"
+    - "No regressions in existing 81 tests"
+    - "Total test count: 96"
+    - "Timing precision validated"
+    - "BEAD task file generated"
+
+  outputs:
+    - "PerformanceTestingService.java"
+    - "PerformanceTestingServiceImpl.java"
+    - "PerformanceTestingServiceSpec.java"
+    - "performance-testing.yaml"

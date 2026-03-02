@@ -60,6 +60,12 @@ Sling-Model-Packages: com.demo.workflow.models
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Spec.java</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
