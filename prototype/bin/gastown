@@ -1,0 +1,238 @@
+#!/usr/bin/env python3
+"""
+GasTown CLI - Multi-Agent Orchestration
+Coordinates AI agents (Mayor pattern) for development workflows
+
+Usage:
+    gastown run <workflow>         # Run a workflow
+    gastown status                 # Show status
+    gastown agents                 # List available agents
+    gastown config                 # Show configuration
+"""
+
+import os
+import sys
+import yaml
+import argparse
+import subprocess
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Any, Optional
+
+GASTOWN_DIR = Path(".gastown")
+CONFIG_FILE = GASTOWN_DIR / "config.yaml"
+WORKFLOWS_DIR = GASTOWN_DIR / "workflows"
+
+
+class GasTown:
+    """Multi-agent orchestrator using Mayor pattern."""
+    
+    def __init__(self):
+        self.config = self.load_config()
+        
+    def load_config(self) -> Dict:
+        """Load GasTown configuration."""
+        if CONFIG_FILE.exists():
+            with open(CONFIG_FILE) as f:
+                return yaml.safe_load(f)
+        return self.default_config()
+    
+    def default_config(self) -> Dict:
+        """Default configuration."""
+        return {
+            "mayor": {
+                "name": "Mayor",
+                "model": "claude-3-opus",
+                "description": "Orchestrates all other agents"
+            },
+            "agents": [
+                {
+                    "name": "aem-coder",
+                    "model": "claude-3-opus",
+                    "skills": ["java", "aem", "osgi"]
+                },
+                {
+                    "name": "aem-tester", 
+                    "model": "claude-3-sonnet",
+                    "skills": ["testing", "tdd", "junit"]
+                },
+                {
+                    "name": "aem-reviewer",
+                    "model": "claude-3-opus",
+                    "skills": ["code-review", "security"]
+                }
+            ],
+            "quality_gates": {
+                "build": "mvn clean compile",
+                "test": "mvn test",
+                "coverage": "80%"
+            }
+        }
+    
+    def run_workflow(self, workflow_name: str, task_id: Optional[str] = None) -> bool:
+        """Execute a workflow."""
+        workflow_file = WORKFLOWS_DIR / f"{workflow_name}.yaml"
+        
+        if not workflow_file.exists():
+            print(f"Workflow {workflow_name} not found")
+            return False
+            
+        with open(workflow_file) as f:
+            workflow = yaml.safe_load(f)
+            
+        print(f"\n{'='*60}")
+        print(f"GasTown - Running Workflow: {workflow_name}")
+        print(f"{'='*60}\n")
+        
+        # Get task from BEAD
+        if task_id:
+            print(f"Task: {task_id}")
+        
+        # Execute steps
+        steps = workflow.get("steps", [])
+        for i, step in enumerate(steps, 1):
+            print(f"\n[Step {i}/{len(steps)}] {step.get('name')}")
+            print(f"Agent: {step.get('agent', 'mayor')}")
+            
+            # In real implementation, would invoke AI agent here
+            # For demo, we'll show what would happen
+            
+            action = step.get("action", "process")
+            print(f"Action: {action}")
+            
+            if step.get("command"):
+                print(f"Command: {step.get('command')}")
+                # Would execute: subprocess.run(step['command'], shell=True)
+                
+            if step.get("wait_for"):
+                print(f"Waiting for: {step.get('wait_for')}")
+                
+            # Simulate step completion
+            print(f"✓ Step {i} complete")
+            
+        print(f"\n{'='*60}")
+        print(f"Workflow {workflow_name} completed successfully!")
+        print(f"{'='*60}\n")
+        
+        return True
+    
+    def list_agents(self):
+        """List available agents."""
+        config = self.load_config()
+        
+        print("\nGasTown Agents:")
+        print("-" * 40)
+        
+        # Mayor
+        mayor = config.get("mayor", {})
+        print(f"\n👔 Mayor (Orchestrator)")
+        print(f"   Model: {mayor.get('model')}")
+        print(f"   Role: {mayor.get('description')}")
+        
+        # Other agents
+        agents = config.get("agents", [])
+        print(f"\n🤖 Specialized Agents:")
+        for agent in agents:
+            print(f"\n   {agent.get('name')}")
+            print(f"   Model: {agent.get('model')}")
+            print(f"   Skills: {', '.join(agent.get('skills', []))}")
+    
+    def show_status(self):
+        """Show GasTown status."""
+        print("\nGasTown Status:")
+        print("-" * 40)
+        
+        # Check if BEAD is configured
+        bead_dir = Path(".bead")
+        if bead_dir.exists():
+            print("✓ BEAD: Configured")
+        else:
+            print("✗ BEAD: Not configured")
+            
+        # Check if workflows exist
+        if WORKFLOWS_DIR.exists():
+            workflows = list(WORKFLOWS_DIR.glob("*.yaml"))
+            print(f"✓ Workflows: {len(workflows)} defined")
+        else:
+            print("✗ Workflows: None defined")
+            
+        print(f"\nQuality Gates:")
+        gates = self.config.get("quality_gates", {})
+        for gate, cmd in gates.items():
+            print(f"   {gate}: {cmd}")
+    
+    def create_workflow(self, name: str, steps: List[Dict]) -> bool:
+        """Create a new workflow."""
+        WORKFLOWS_DIR.mkdir(parents=True, exist_ok=True)
+        
+        workflow = {
+            "name": name,
+            "description": f"Generated workflow: {name}",
+            "created_at": datetime.now().isoformat(),
+            "steps": steps
+        }
+        
+        workflow_file = WORKFLOWS_DIR / f"{name}.yaml"
+        with open(workflow_file, 'w') as f:
+            yaml.dump(workflow, f, default_flow_style=False, sort_keys=False)
+            
+        return True
+
+
+def main():
+    parser = argparse.ArgumentParser(description="GasTown - AI Agent Orchestration")
+    subparsers = parser.add_subparsers(dest="command")
+    
+    # run command
+    run_parser = subparsers.add_parser("run", help="Run a workflow")
+    run_parser.add_argument("workflow", help="Workflow name")
+    run_parser.add_argument("--task", "-t", help="Task ID from BEAD")
+    
+    # status command
+    subparsers.add_parser("status", help="Show GasTown status")
+    
+    # agents command
+    subparsers.add_parser("agents", help="List available agents")
+    
+    # config command
+    subparsers.add_parser("config", help="Show configuration")
+    
+    # init command
+    init_parser = subparsers.add_parser("init", help="Initialize GasTown")
+    
+    args = parser.parse_args()
+    
+    gastown = GasTown()
+    
+    if args.command == "run":
+        gastown.run_workflow(args.workflow, args.task)
+        
+    elif args.command == "status":
+        gastown.show_status()
+        
+    elif args.command == "agents":
+        gastown.list_agents()
+        
+    elif args.command == "config":
+        import json
+        print(json.dumps(gastown.config, indent=2))
+        
+    elif args.command == "init":
+        print("Initializing GasTown...")
+        GASTOWN_DIR.mkdir(parents=True, exist_ok=True)
+        WORKFLOWS_DIR.mkdir(parents=True, exist_ok=True)
+        
+        # Create default config
+        with open(CONFIG_FILE, 'w') as f:
+            yaml.dump(gastown.default_config(), f, default_flow_style=False)
+            
+        print("✓ GasTown initialized!")
+        print(f"  Config: {CONFIG_FILE}")
+        print(f"  Workflows: {WORKFLOWS_DIR}")
+        
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

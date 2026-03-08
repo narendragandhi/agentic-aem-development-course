@@ -1,0 +1,48 @@
+# BEAD Configuration
+# Build, Execute, Analyze, Document - Persistent Memory for AI Agents
+
+project:
+  name: "secure-asset-workflow"
+  version: "1.0.0"
+  description: "AEM Secure Asset Workflow with BMAD/BEAD/GasTown"
+
+task_types:
+  - epic
+  - feature
+  - task
+  - subtask
+
+agents:
+  - name: "ai-coder"
+    model: "claude-3-opus"
+    description: "Implements code from specifications"
+    
+  - name: "ai-tester"
+    model: "claude-3-sonnet"
+    description: "Writes and runs tests"
+    
+  - name: "ai-reviewer"
+    model: "claude-3-opus"
+    description: "Reviews code for quality and security"
+    
+  - name: "ai-architect"
+    model: "claude-3-opus"
+    description: "Designs architecture and specifications"
+
+statuses:
+  - pending
+  - in_progress
+  - blocked
+  - completed
+  - cancelled
+
+priorities:
+  - critical
+  - high
+  - medium
+  - low
+
+defaults:
+  agent: "ai-coder"
+  priority: "medium"
+  status: "pending"

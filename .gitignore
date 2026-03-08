@@ -42,3 +42,8 @@ logs/
 # Test output
 junit*.xml
 surefire-reports/
+
+# Claude AI
+.claude/
+*.claude
+claude*.md

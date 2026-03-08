@@ -1,5 +1,10 @@
 # Agentic AEM Development Course
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-55%20passing-green)](prototype)
+[![AEM Version](https://img.shields.io/badge/AEM-6.5%2B-blue)](https://experienceleague.adobe.com/docs/experience-manager-65.html)
+[![Java](https://img.shields.io/badge/Java-11%2B-orange)](https://www.java.com/)
+
 A comprehensive course on **Agentic Development for AEM** using **BMAD**, **BEAD**, and **GasTown** methodologies. Features a production-ready **Secure Asset Approval Workflow** as the hands-on case study.
 
 ```

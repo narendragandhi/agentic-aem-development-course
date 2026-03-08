@@ -1,0 +1,55 @@
+id: "SAW-010"
+type: "feature"
+title: "Antivirus Scanning Feature"
+status: "in_progress"
+
+parent: "SAW-001"
+priority: "critical"
+assignee: "ai-coder"
+agent: "ai-coder"
+
+description: |
+  Implement antivirus scanning service using ClamAV
+  - Scan uploaded assets for malware
+  - Handle scan results
+  - Log scan operations
+
+session_log:
+  - timestamp: "2024-01-15T10:00:00Z"
+    agent: "ai-coder"
+    action: "Created task"
+    note: "Starting implementation"
+    
+  - timestamp: "2024-01-15T10:30:00Z"
+    agent: "ai-coder"
+    action: "Wrote TDD tests"
+    note: "AntivirusScanServiceSpec created - RED phase"
+    
+  - timestamp: "2024-01-15T11:00:00Z"
+    agent: "ai-coder"
+    action: "Implemented service"
+    note: "AntivirusScanServiceImpl created - GREEN phase"
+
+dependencies:
+  - id: "SAW-001"
+    status: "completed"
+
+sub_tasks:
+  - SAW-011  # Service Interface
+  - SAW-012  # Implementation
+  - SAW-013  # Unit Tests
+
+artifacts:
+  - "core/src/main/java/.../AntivirusScanService.java"
+  - "core/src/main/java/.../AntivirusScanServiceImpl.java"
+  - "core/src/test/java/.../AntivirusScanServiceSpec.java"
+
+acceptance_criteria:
+  - criteria: "Scan returns CLEAN for safe files"
+    status: "completed"
+  - criteria: "Scan returns INFECTED for malware"
+    status: "completed"
+  - criteria: "Scan completes within 5 seconds"
+    status: "completed"
+  - criteria: "Service isAvailable() works"
+    status: "completed"

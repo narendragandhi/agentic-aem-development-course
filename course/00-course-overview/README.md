@@ -6,6 +6,15 @@ This hands-on course demonstrates how AI agents can transform the entire softwar
 
 ---
 
+## Course Versions
+
+| Version | Duration | Labs | Best For |
+|---------|----------|------|----------|
+| [**Main Course**](../labs/README.md) | 24 hours | 8 labs | Fast-paced learning, experienced developers |
+| [**Comprehensive**](../labs-comprehensive/README.md) | 50 hours | 15 labs | Detailed coverage, beginners |
+
+---
+
 ## Course Architecture
 
 ```
@@ -236,22 +245,17 @@ course/
 ├── 04-gastown-orchestration/  # GasTown Configuration
 │   ├── agents/
 │   └── workflows/
-├── 05-hands-on-labs/          # Step-by-Step Labs
-│   ├── lab-01-environment-setup/
-│   ├── lab-02-prd-creation/
-│   ├── lab-03-architecture/
-│   ├── lab-04-development/
-│   ├── lab-05-bead-tracking/
-│   ├── lab-06-gastown-orchestration/
-│   ├── lab-07-testing/
-│   ├── lab-08-deployment/
-│   ├── lab-09-tdd-integration/
-│   ├── lab-10-security-scanner/
-│   ├── lab-11-document-security/
-│   ├── lab-12-owasp-patterns/
-│   ├── lab-13-agent-orchestrator/
-│   ├── lab-14-integration-testing/
-│   └── lab-15-code-quality/
+├── labs/                      # Main Course Labs (24 hours)
+│   ├── lab-01-setup-foundations/
+│   ├── lab-02-bmad-architecture/
+│   ├── lab-03-tdd-development/
+│   ├── lab-04-security-scanner/
+│   ├── lab-05-agent-orchestrator/
+│   ├── lab-06-testing/
+│   ├── lab-07-quality-deployment/
+│   └── lab-08-capstone/
+├── labs-comprehensive/        # Comprehensive Labs (50 hours)
+│   ├── lab-01 through lab-15  # (15 detailed labs)
 ├── 06-instructor-guide/       # Teaching Materials
 │   ├── facilitation-guide.md
 │   ├── assessment-rubrics.md
@@ -284,6 +288,16 @@ Upon successful completion, participants receive:
 
 ## Time Investment
 
+### Main Course (24 hours)
+| Component | Duration |
+|-----------|----------|
+| Instruction | 20 hours |
+| Hands-On Labs | 4 hours |
+| **Total** | **24 hours** |
+
+Recommended pace: 3-4 days intensive or 2 weeks part-time
+
+### Comprehensive Course (50 hours)
 | Component | Duration |
 |-----------|----------|
 | Video Lectures | 16 hours |

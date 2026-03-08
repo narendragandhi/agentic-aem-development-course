@@ -1,0 +1,283 @@
+#!/usr/bin/env python3
+"""
+BEAD CLI - Build, Execute, Analyze, Document
+Persistent Memory for AI Agents
+
+Usage:
+    bead list                     # List all tasks
+    bead create <type> <title>   # Create new task
+    bead show <id>               # Show task details
+    bead update <id> <status>    # Update task status
+    bead log <id> <action>       # Add session log entry
+    bead next                     # Get next pending task
+"""
+
+import os
+import sys
+import yaml
+import argparse
+from datetime import datetime
+from pathlib import Path
+from typing import List, Dict, Any, Optional
+
+BEAD_DIR = Path(".bead")
+ISSUES_DIR = BEAD_DIR / "issues"
+CONFIG_FILE = BEAD_DIR / "config.yaml"
+INDEX_FILE = BEAD_DIR / "index.yaml"
+
+
+class BeadCLI:
+    """BEAD CLI for managing AI agent tasks."""
+    
+    def __init__(self):
+        self.config = self.load_config()
+        self.index = self.load_index()
+        
+    def load_config(self) -> Dict:
+        """Load BEAD configuration."""
+        if CONFIG_FILE.exists():
+            with open(CONFIG_FILE) as f:
+                return yaml.safe_load(f)
+        return {"project": {"name": "unknown"}}
+    
+    def load_index(self) -> Dict:
+        """Load or create task index."""
+        if INDEX_FILE.exists():
+            with open(INDEX_FILE) as f:
+                return yaml.safe_load(f)
+        return {"tasks": {}}
+    
+    def save_index(self):
+        """Save task index."""
+        INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(INDEX_FILE, 'w') as f:
+            yaml.dump(self.index, f, default_flow_style=False)
+    
+    def list_tasks(self, status: Optional[str] = None, 
+                   task_type: Optional[str] = None) -> List[Dict]:
+        """List all tasks, optionally filtered."""
+        tasks = []
+        if not ISSUES_DIR.exists():
+            return tasks
+            
+        for file in ISSUES_DIR.glob("*.yaml"):
+            with open(file) as f:
+                task = yaml.safe_load(f)
+                if status and task.get("status") != status:
+                    continue
+                if task_type and task.get("type") != task_type:
+                    continue
+                tasks.append(task)
+        return sorted(tasks, key=lambda t: t.get("id", ""))
+    
+    def create_task(self, task_type: str, title: str, 
+                    parent: Optional[str] = None) -> Dict:
+        """Create a new task."""
+        # Generate ID
+        prefix = task_type[:3].upper()
+        existing = self.list_tasks(task_type=task_type)
+        task_num = len(existing) + 1
+        task_id = f"{prefix}-{task_num:03d}"
+        
+        task = {
+            "id": task_id,
+            "type": task_type,
+            "title": title,
+            "status": self.config.get("defaults", {}).get("status", "pending"),
+            "priority": self.config.get("defaults", {}).get("priority", "medium"),
+            "agent": self.config.get("defaults", {}).get("agent", "ai-coder"),
+            "description": "",
+            "session_log": [],
+            "dependencies": [],
+            "acceptance_criteria": [],
+            "created_at": datetime.now().isoformat()
+        }
+        
+        if parent:
+            task["parent"] = parent
+            
+        # Save task file
+        ISSUES_DIR.mkdir(parents=True, exist_ok=True)
+        task_file = ISSUES_DIR / f"{task_id}.yaml"
+        with open(task_file, 'w') as f:
+            yaml.dump(task, f, default_flow_style=False, sort_keys=False)
+            
+        # Update index
+        self.index["tasks"][task_id] = {
+            "title": title,
+            "type": task_type,
+            "status": task["status"]
+        }
+        self.save_index()
+        
+        return task
+    
+    def show_task(self, task_id: str) -> Optional[Dict]:
+        """Show task details."""
+        task_file = ISSUES_DIR / f"{task_id}.yaml"
+        if not task_file.exists():
+            print(f"Task {task_id} not found")
+            return None
+            
+        with open(task_file) as f:
+            return yaml.safe_load(f)
+    
+    def update_status(self, task_id: str, status: str) -> bool:
+        """Update task status."""
+        task = self.show_task(task_id)
+        if not task:
+            return False
+            
+        task["status"] = status
+        task["updated_at"] = datetime.now().isoformat()
+        
+        task_file = ISSUES_DIR / f"{task_id}.yaml"
+        with open(task_file, 'w') as f:
+            yaml.dump(task, f, default_flow_style=False, sort_keys=False)
+            
+        # Update index
+        self.index["tasks"][task_id]["status"] = status
+        self.save_index()
+        
+        return True
+    
+    def add_log(self, task_id: str, action: str, note: str = "") -> bool:
+        """Add session log entry."""
+        task = self.show_task(task_id)
+        if not task:
+            return False
+            
+        log_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "agent": os.environ.get("BEAD_AGENT", "unknown"),
+            "action": action,
+            "note": note
+        }
+        
+        if "session_log" not in task:
+            task["session_log"] = []
+        task["session_log"].append(log_entry)
+        
+        task_file = ISSUES_DIR / f"{task_id}.yaml"
+        with open(task_file, 'w') as f:
+            yaml.dump(task, f, default_flow_style=False, sort_keys=False)
+            
+        return True
+    
+    def get_next_task(self, agent: Optional[str] = None) -> Optional[Dict]:
+        """Get next pending task for agent."""
+        pending = self.list_tasks(status="pending")
+        
+        for task in pending:
+            if agent and task.get("agent") != agent:
+                continue
+                
+            # Check dependencies are met
+            deps = task.get("dependencies", [])
+            all_met = True
+            for dep in deps:
+                dep_task = self.show_task(dep.get("id") if isinstance(dep, dict) else dep)
+                if dep_task and dep_task.get("status") != "completed":
+                    all_met = False
+                    break
+                    
+            if all_met:
+                return task
+                
+        return None
+
+
+def main():
+    parser = argparse.ArgumentParser(description="BEAD - AI Agent Task Tracking")
+    subparsers = parser.add_subparsers(dest="command")
+    
+    # list command
+    list_parser = subparsers.add_parser("list", help="List tasks")
+    list_parser.add_argument("--status", "-s", help="Filter by status")
+    list_parser.add_argument("--type", "-t", help="Filter by type")
+    
+    # create command
+    create_parser = subparsers.add_parser("create", help="Create task")
+    create_parser.add_argument("type", help="Task type (epic/feature/task)")
+    create_parser.add_argument("title", help="Task title")
+    create_parser.add_argument("--parent", "-p", help="Parent task ID")
+    
+    # show command
+    show_parser = subparsers.add_parser("show", help="Show task")
+    show_parser.add_argument("id", help="Task ID")
+    
+    # update command
+    update_parser = subparsers.add_parser("update", help="Update task")
+    update_parser.add_argument("id", help="Task ID")
+    update_parser.add_argument("status", help="New status")
+    
+    # log command
+    log_parser = subparsers.add_parser("log", help="Add log entry")
+    log_parser.add_argument("id", help="Task ID")
+    log_parser.add_argument("action", help="Action taken")
+    log_parser.add_argument("--note", "-n", default="", help="Notes")
+    
+    # next command
+    next_parser = subparsers.add_parser("next", help="Get next task")
+    next_parser.add_argument("--agent", "-a", help="Filter by agent")
+    
+    args = parser.parse_args()
+    
+    bead = BeadCLI()
+    
+    if args.command == "list":
+        tasks = bead.list_tasks(status=args.status, task_type=args.type)
+        print(f"\n{'ID':<10} {'Type':<10} {'Status':<12} {'Title'}")
+        print("-" * 60)
+        for task in tasks:
+            print(f"{task.get('id',''):<10} {task.get('type',''):<10} {task.get('status',''):<12} {task.get('title','')}")
+            
+    elif args.command == "create":
+        task = bead.create_task(args.type, args.title, args.parent)
+        print(f"Created: {task['id']} - {task['title']}")
+        
+    elif args.command == "show":
+        task = bead.show_task(args.id)
+        if task:
+            print(f"\n{'='*60}")
+            print(f"ID: {task.get('id')}")
+            print(f"Type: {task.get('type')}")
+            print(f"Status: {task.get('status')}")
+            print(f"Priority: {task.get('priority')}")
+            print(f"Title: {task.get('title')}")
+            print(f"\nDescription:\n{task.get('description', 'N/A')}")
+            
+            if task.get("session_log"):
+                print(f"\nSession Log:")
+                for log in task["session_log"]:
+                    print(f"  [{log['timestamp']}] {log['agent']}: {log['action']}")
+                    if log.get("note"):
+                        print(f"    Note: {log['note']}")
+                        
+    elif args.command == "update":
+        if bead.update_status(args.id, args.status):
+            print(f"Updated {args.id} to {args.status}")
+        else:
+            print(f"Failed to update {args.id}")
+            
+    elif args.command == "log":
+        if bead.add_log(args.id, args.action, args.note):
+            print(f"Added log to {args.id}")
+        else:
+            print(f"Failed to add log to {args.id}")
+            
+    elif args.command == "next":
+        task = bead.get_next_task(agent=args.agent)
+        if task:
+            print(f"\nNext task: {task['id']} - {task['title']}")
+            print(f"Type: {task.get('type')}")
+            print(f"Agent: {task.get('agent')}")
+        else:
+            print("No pending tasks")
+            
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

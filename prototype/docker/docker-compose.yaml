@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # ClamAV Antivirus Scanner
+  clamav:
+    image: clamav/clamd:1.3
+    container_name: demo-clamav
+    hostname: clamav
+    ports:
+      - "3310:3310"
+    environment:
+      - CLAMAV_NO_CLAMD=false
+      - CLAMAV_NO_FRESHCLAMD=false
+    volumes:
+      - clamav-db:/var/lib/clamav
+    networks:
+      - demo-network
+    healthcheck:
+      test: ["CMD", "clamdscan", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # AEM Author (for development)
+  aem-author:
+    image: adobe/aem-author:6.5.17
+    container_name: demo-aem-author
+    hostname: aem-author
+    ports:
+      - "4502:4502"
+    environment:
+      - AEM_RUNMODE=author
+      - AEM_PORT=4502
+      - CLAMAV_HOST=clamav
+      - CLAMAV_PORT=3310
+    volumes:
+      - aem-author:/opt/aem/author
+    networks:
+      - demo-network
+    depends_on:
+      clamav:
+        condition: service_healthy
+
+  # PostgreSQL (for future use)
+  postgres:
+    image: postgres:15-alpine
+    container_name: demo-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=demo
+      - POSTGRES_USER=demo
+      - POSTGRES_PASSWORD=demo
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - demo-network
+
+networks:
+  demo-network:
+    driver: bridge
+
+volumes:
+  clamav-db:
+  aem-author:
+  postgres-data:
+
+---
+
+# Development Commands
+
+# Start all services
+# docker-compose up -d
+
+# View logs
+# docker-compose logs -f
+
+# Stop all services
+# docker-compose down
+
+# Test ClamAV connectivity
+# docker exec demo-clamav clamdscan --version
+
+# Access AEM
+# http://localhost:4502
+# Credentials: admin/admin
