@@ -1,0 +1,31 @@
+# Solution: Cache Rules Configuration
+
+/cache {
+    /docroot "/mnt/var/dispatcher/cache"
+    
+    /rules {
+        # HTML - cache for 1 hour
+        /0001 { /type "allow" /url "*.html" /age 3600 }
+        
+        # Static resources - cache for 1 week
+        /0010 { /type "allow" /url "*.png" /age 604800 }
+        /0011 { /type "allow" /url "*.jpg" /age 604800 }
+        /0012 { /type "allow" /url "*.gif" /age 604800 }
+        /0013 { /type "allow" /url "*.svg" /age 604800 }
+        
+        # CSS/JS - cache for 1 day
+        /0020 { /type "allow" /url "*.css" /age 86400 }
+        /0021 { /type "allow" /url "*.js" /age 86400 }
+        
+        # Clientlibs
+        /0030 { /type "allow" /url "/etc.clientlibs/*" /age 86400 }
+        
+        # Content
+        /0040 { /type "allow" /url "/content/*" }
+        
+        # Block internal paths
+        /0090 { /type "deny" /url "/libs/*" }
+        /0091 { /type "deny" /url "/apps/*" }
+        /0092 { /type "deny" /url "/system/*" }
+    }
+}

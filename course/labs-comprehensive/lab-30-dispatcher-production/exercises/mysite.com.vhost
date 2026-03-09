@@ -1,0 +1,31 @@
+# Exercise 1: Virtual Host Configuration
+#
+# TODO: Create a basic virtual host configuration
+#
+# Requirements:
+# 1. ServerName: mysite.com
+# 2. ServerAlias: www.mysite.com
+# 3. Enable rewrite engine
+# 4. Redirect www to non-www
+# 5. Include dispatcher configuration
+# 6. Set up logging
+
+<VirtualHost *:80>
+    # TODO: Add ServerName
+    # TODO: Add ServerAlias
+    
+    # TODO: Enable rewrite engine
+    # RewriteEngine On
+    
+    # TODO: Add www to non-www redirect
+    # Hint: RewriteCond %{HTTP_HOST} ^www\.mysite\.com
+    # Hint: RewriteRule ^(.*)$ https://mysite.com$1 [R=301,L]
+    
+    # TODO: Add logging
+    # CustomLog ${APACHE_LOG_DIR}/mysite.com_access.log combined
+    # ErrorLog ${APACHE_LOG_DIR}/mysite.com_error.log
+    
+    # TODO: Include dispatcher
+    # Include conf.d/dispatcher_vhost.conf
+
+</VirtualHost>

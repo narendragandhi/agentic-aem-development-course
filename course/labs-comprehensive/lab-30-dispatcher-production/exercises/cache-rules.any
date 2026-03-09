@@ -1,0 +1,27 @@
+# Exercise 2: Cache Rules Configuration
+#
+# TODO: Define cache rules for a production AEM site
+#
+# Requirements:
+# 1. Allow /content/* (cacheable)
+# 2. Allow /etc.clientlibs/* (static resources)
+# 3. Cache HTML for 1 hour
+# 4. Cache images for 1 week
+# 5. Cache CSS/JS for 1 day
+# 6. Block /libs/* (internal)
+# 7. Block /apps/* (internal)
+
+/cache {
+    /docroot "/mnt/var/dispatcher/cache"
+    
+    /rules {
+        # TODO: Add cache rules
+        
+        # Hint: /type "allow" for cacheable content
+        # Hint: /type "deny" for internal content
+        # Hint: /age is cache duration in seconds
+        
+        # Example:
+        # /0001 { /type "allow" /url "/content/*" }
+    }
+}

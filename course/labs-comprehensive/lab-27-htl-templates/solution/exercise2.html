@@ -1,0 +1,11 @@
+<!--
+    Solution 2: Conditional Display
+-->
+<sly data-sly-use.assetInfo="com.demo.aem.models.AssetInfo">
+
+    <div class="asset-status">
+        <span class="badge published" data-sly-test="${assetInfo.published}">Published</span>
+        <span class="badge draft" data-sly-test="${!assetInfo.published}">Draft</span>
+    </div>
+    
+</sly>

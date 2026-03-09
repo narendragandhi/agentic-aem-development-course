@@ -1,0 +1,11 @@
+<!--
+    Solution 1: Display Basic Properties
+-->
+<sly data-sly-use.assetInfo="com.demo.aem.models.AssetInfo">
+
+    <div class="asset">
+        <h1>${assetInfo.title}</h1>
+        <p data-sly-test="${assetInfo.description}">${assetInfo.description}</p>
+    </div>
+    
+</sly>

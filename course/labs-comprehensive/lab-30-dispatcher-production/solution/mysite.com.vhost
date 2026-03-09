@@ -1,0 +1,21 @@
+# Solution: Virtual Host Configuration
+
+<VirtualHost *:80>
+    ServerName mysite.com
+    ServerAlias www.mysite.com
+    
+    # Enable rewrite engine
+    RewriteEngine On
+    
+    # Redirect www to non-www
+    RewriteCond %{HTTP_HOST} ^www\.mysite\.com [NC]
+    RewriteRule ^(.*)$ https://mysite.com$1 [R=301,L]
+    
+    # Logging
+    CustomLog ${APACHE_LOG_DIR}/mysite.com_access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/mysite.com_error.log
+    
+    # Include dispatcher
+    Include conf.d/dispatcher_vhost.conf
+
+</VirtualHost>
