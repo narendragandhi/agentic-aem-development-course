@@ -109,10 +109,20 @@ By the end of this course, participants will be able to:
 ### AI Tools
 - Claude Code CLI or similar AI coding assistant
 - Access to Claude API (for GasTown orchestration)
+- Adobe AEM Agent Skills (installed via skill marketplace)
+- AEM MCP Server package (from Software Distribution Portal)
 
 ---
 
 ## Course Modules
+
+### Module 0: Local Development with AI Tools (2 hours) *NEW*
+- Setting up AI coding tools for AEM development
+- AGENTS.md and project context generation
+- Installing Adobe's AEM Agent Skills
+- MCP Servers for runtime integration
+- **Lab 0.1**: AI Tools Setup and Configuration
+- **Lab 0.2**: Component creation with AI assistance
 
 ### Module 1: Introduction to Agentic Development (2 hours)
 - What is agentic AI development?
@@ -230,6 +240,12 @@ course/
 │   ├── PREREQUISITES.md
 │   └── ENVIRONMENT-SETUP.md
 ├── 01-prd/                    # Product Requirements
+├── 05-ai-tools-setup/         # AI Tools Configuration (NEW)
+│   ├── README.md
+│   ├── 01-agents-md.md
+│   ├── 02-agent-skills.md
+│   ├── 03-mcp-servers.md
+│   └── 04-ide-configuration.md
 │   ├── secure-asset-workflow-prd.md
 │   └── requirements-checklist.md
 ├── 02-bmad-phases/            # BMAD Phase Documents
@@ -245,7 +261,8 @@ course/
 ├── 04-gastown-orchestration/  # GasTown Configuration
 │   ├── agents/
 │   └── workflows/
-├── labs/                      # Main Course Labs (24 hours)
+├── labs/                      # Main Course Labs (26 hours)
+│   ├── lab-00-ai-tools-setup/     # NEW: AI Tools Lab
 │   ├── lab-01-setup-foundations/
 │   ├── lab-02-bmad-architecture/
 │   ├── lab-03-tdd-development/
@@ -288,12 +305,12 @@ Upon successful completion, participants receive:
 
 ## Time Investment
 
-### Main Course (24 hours)
+### Main Course (26 hours)
 | Component | Duration |
 |-----------|----------|
-| Instruction | 20 hours |
-| Hands-On Labs | 4 hours |
-| **Total** | **24 hours** |
+| Instruction | 21 hours |
+| Hands-On Labs | 5 hours |
+| **Total** | **26 hours** |
 
 Recommended pace: 3-4 days intensive or 2 weeks part-time
 

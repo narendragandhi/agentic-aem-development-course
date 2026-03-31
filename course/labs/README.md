@@ -12,6 +12,7 @@ A focused 24-hour course on Agentic Development for AEM using BMAD, BEAD, and Ga
 
 | Lab | Title | Duration | Topics |
 |-----|-------|----------|--------|
+| 0 | [AI Tools Setup](lab-00-ai-tools-setup/README.md) | 1.5 hours | AGENTS.md, Adobe Skills, MCP Servers, IDE config |
 | 1 | [Setup & Foundations](lab-01-setup-foundations/README.md) | 3 hours | Environment, PRD, BMAD/BEAD/GasTown overview |
 | 2 | [BMAD Architecture](lab-02-bmad-architecture/README.md) | 3 hours | Domain models, system design, service contracts |
 | 3 | [TDD Development](lab-03-tdd-development/README.md) | 3 hours | RED-GREEN-REFACTOR, spec tests, BEAD tracking |
@@ -21,7 +22,7 @@ A focused 24-hour course on Agentic Development for AEM using BMAD, BEAD, and Ga
 | 7 | [Quality & Deployment](lab-07-quality-deployment/README.md) | 3 hours | Linting, coverage, Javadoc, Cloud deployment |
 | 8 | [Capstone Project](lab-08-capstone/README.md) | 4 hours | End-to-end feature implementation |
 
-**Total: 26 hours** (24 hours instruction + 2 hours buffer)
+**Total: 27.5 hours** (25.5 hours instruction + 2 hours buffer)
 
 ---
 
@@ -30,8 +31,9 @@ A focused 24-hour course on Agentic Development for AEM using BMAD, BEAD, and Ga
 - Java 11+
 - Maven 3.8+
 - Git
-- Docker (for optional ClamAV integration)
-- IDE (VS Code or IntelliJ)
+- Docker (for optional ClamAV integration and Dispatcher MCP)
+- IDE (VS Code, IntelliJ, or Cursor)
+- AI Coding Tool (Claude Code, Cursor, or GitHub Copilot)
 
 ---
 
@@ -57,14 +59,14 @@ mvn clean install
 │                      LEARNING PROGRESSION                        │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  FOUNDATIONS          CORE SKILLS           ADVANCED             │
-│  ┌─────────┐         ┌─────────┐          ┌─────────┐           │
-│  │ Lab 1-2 │────────▶│ Lab 3-5 │─────────▶│ Lab 6-8 │           │
-│  └─────────┘         └─────────┘          └─────────┘           │
-│                                                                  │
-│  - Setup             - TDD cycle           - Testing            │
-│  - PRD writing       - Security            - Quality            │
-│  - Architecture      - Orchestration       - Deployment         │
+│  AI TOOLS          FOUNDATIONS        CORE SKILLS      ADVANCED   │
+│  ┌───────┐        ┌─────────┐        ┌─────────┐     ┌─────────┐ │
+│  │ Lab 0 │───────▶│ Lab 1-2 │───────▶│ Lab 3-5 │────▶│ Lab 6-8 │ │
+│  └───────┘        └─────────┘        └─────────┘     └─────────┘ │
+│                                                                   │
+│  - AGENTS.md       - Setup            - TDD cycle     - Testing   │
+│  - MCP Servers     - PRD writing      - Security      - Quality   │
+│  - Skills          - Architecture     - Orchestration - Deploy    │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -100,6 +102,7 @@ The "Mayor" pattern for coordinating specialized AI agents in TDD workflows
 
 | Area | Skills |
 |------|--------|
+| **AI Tools** | AGENTS.md, Adobe Skills, MCP Servers, IDE integration |
 | **Methodology** | BMAD phases, BEAD tracking, GasTown orchestration |
 | **TDD** | Spec tests, RED-GREEN-REFACTOR, test organization |
 | **Security** | XSS/SQLi detection, document scanning, OWASP patterns |
